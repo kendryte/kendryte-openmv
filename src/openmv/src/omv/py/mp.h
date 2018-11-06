@@ -12,6 +12,7 @@
 #include <string.h>
 #include "mpconfig.h"
 #include "misc.h"
+#include "systick.h"
 #include "qstr.h"
 #include "misc.h"
 #include "nlr.h"

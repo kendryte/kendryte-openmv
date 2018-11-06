@@ -181,7 +181,8 @@ BOARD_DRIVERS = $(BOARD_DRIVERS_PATH)/lcd.c\
 				$(BOARD_DRIVERS_PATH)/face_detect.c\
 				$(BOARD_DRIVERS_PATH)/region_layer.c\
 				$(BOARD_DRIVERS_PATH)/uart_core.c\
-				$(BOARD_DRIVERS_PATH)/ws2812b.c
+				$(BOARD_DRIVERS_PATH)/ws2812b.c\
+				$(BOARD_DRIVERS_PATH)/systick.c
 
 MPY_LIB_SRC = lib/timeutils/timeutils.c \
 			  lib/utils/sys_stdio_mphal.c
