@@ -5593,8 +5593,7 @@ mp_obj_t py_imagewriter_add_frame(mp_obj_t self_in, mp_obj_t img_obj)
     PY_ASSERT_TYPE(img_obj, &py_image_type);
     image_t *arg_img = &((py_image_obj_t *) img_obj)->_cobj;
 
-    //uint32_t ms = systick_current_millis(); // Write out elapsed ms. hutu
-    uint32_t ms = 0;
+    uint32_t ms = systick_current_millis(); // Write out elapsed ms.
     write_long(fp, ms - ((py_imagewriter_obj_t *) self_in)->ms);
     ((py_imagewriter_obj_t *) self_in)->ms = ms;
 
@@ -5645,8 +5644,7 @@ mp_obj_t py_image_imagewriter(mp_obj_t path)
     write_long(&obj->fp, *((uint32_t *) "STR ")); // Stream
     write_long(&obj->fp, *((uint32_t *) "V1.0")); // v1.0
 
-    //obj->ms = systick_current_millis(); hutu
-    obj->ms = 0;
+    obj->ms = systick_current_millis();
     return obj;
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_1(py_image_imagewriter_obj, py_image_imagewriter);
@@ -5694,17 +5692,24 @@ mp_obj_t py_imagereader_next_frame(uint n_args, const mp_obj_t *args, mp_map_t *
 
     uint32_t ms_tmp;
     read_long(fp, &ms_tmp);
-#if 0 //hutu
+
 
     uint32_t ms; // Wait for elapsed ms.
+#if 0
     for (ms = systick_current_millis();
          ((ms - ((py_imagewriter_obj_t *) args[0])->ms) < ms_tmp);
          ms = systick_current_millis()) {
         __WFI();
     }
-
-    ((py_imagewriter_obj_t *) args[0])->ms = ms;
 #endif
+	while(1)
+	{
+		ms = systick_current_millis();
+		if((ms - ((py_imagewriter_obj_t *) args[0])->ms) >= ms_tmp)
+			break;
+	}
+    ((py_imagewriter_obj_t *) args[0])->ms = ms;
+
     read_long(fp, (uint32_t *) &image.w);
     read_long(fp, (uint32_t *) &image.h);
     read_long(fp, (uint32_t *) &image.bpp);
@@ -5764,8 +5769,7 @@ mp_obj_t py_image_imagereader(mp_obj_t path)
     read_long_expect(&obj->fp, *((uint32_t *) "STR ")); // Stream
     read_long_expect(&obj->fp, *((uint32_t *) "V1.0")); // v1.0
 
-    //obj->ms = systick_current_millis(); hutu
-    obj->ms = 0;
+    obj->ms = systick_current_millis();
     return obj;
 }
 STATIC MP_DEFINE_CONST_FUN_OBJ_1(py_image_imagereader_obj, py_image_imagereader);
