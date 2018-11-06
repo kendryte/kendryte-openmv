@@ -20,52 +20,121 @@ const float __atanf_lut[4] = {
     +0.9997878412794807f     //p1
 };
 
+extern float sqrtf(float x);
 float ALWAYS_INLINE fast_sqrtf(float x)
 {
-#if 0
-    asm volatile (
-            "vsqrt.f32  %[r], %[x]\n"
-            : [r] "=t" (x)
-            : [x] "t"  (x));
-#endif
-    return x;
+	return sqrtf(x);
 }
+
+#define FORCE_EVAL(x) do {                        \
+	if (sizeof(x) == sizeof(float)) {         \
+		volatile float __x;               \
+		__x = (x);                        \
+                (void)__x;                        \
+	} else if (sizeof(x) == sizeof(double)) { \
+		volatile double __x;              \
+		__x = (x);                        \
+                (void)__x;                        \
+	} else {                                  \
+		volatile long double __x;         \
+		__x = (x);                        \
+                (void)__x;                        \
+	}                                         \
+} while(0)
+
+float riscv_floorf(float x)
+{
+	union {float f; uint32_t i;} u = {x};
+	int e = (int)(u.i >> 23 & 0xff) - 0x7f;
+	uint32_t m;
+
+	if (e >= 23)
+		return x;
+	if (e >= 0) {
+		m = 0x007fffff >> e;
+		if ((u.i & m) == 0)
+			return x;
+		FORCE_EVAL(x + 0x1p120f);
+		if (u.i >> 31)
+			u.i += m;
+		u.i &= ~m;
+	} else {
+		FORCE_EVAL(x + 0x1p120f);
+		if (u.i >> 31 == 0)
+			u.i = 0;
+		else if (u.i << 1)
+			u.f = -1.0;
+	}
+	return u.f;
+}
+
 
 int ALWAYS_INLINE fast_floorf(float x)
 {
-    int i = 0;
-#if 0
-    asm volatile (
-            "vcvt.S32.f32  %[r], %[x]\n"
-            : [r] "=t" (i)
-            : [x] "t"  (x));
-#endif
-    return i;
+    return (int)riscv_floorf(x);
 }
+
+static float ceilf(float x)
+{
+	union {float f; uint32_t i;} u = {x};
+	int e = (int)(u.i >> 23 & 0xff) - 0x7f;
+	uint32_t m;
+
+	if (e >= 23)
+		return x;
+	if (e >= 0) {
+		m = 0x007fffff >> e;
+		if ((u.i & m) == 0)
+			return x;
+		FORCE_EVAL(x + 0x1p120f);
+		if (u.i >> 31 == 0)
+			u.i += m;
+		u.i &= ~m;
+	} else {
+		FORCE_EVAL(x + 0x1p120f);
+		if (u.i >> 31)
+			u.f = -0.0;
+		else if (u.i << 1)
+			u.f = 1.0;
+	}
+	return u.f;
+}
+
 
 int ALWAYS_INLINE fast_ceilf(float x)
 {
-    int i = 0;
-#if 0
-    x += 0.9999f;
-    asm volatile (
-            "vcvt.S32.f32  %[r], %[x]\n"
-            : [r] "=t" (i)
-            : [x] "t"  (x));
-#endif 
-    return i;
+    return (int)ceilf(x);
+}
+
+float roundf(float x)
+{
+	union {float f; uint32_t i;} u = {x};
+	int e = u.i >> 23 & 0xff;
+	float y;
+
+	if (e >= 0x7f+23)
+		return x;
+	if (u.i >> 31)
+		x = -x;
+	if (e < 0x7f-1) {
+		FORCE_EVAL(x + 0x1p23f);
+		return 0*u.f;
+	}
+	y = (float)(x + 0x1p23f) - 0x1p23f - x;
+	if (y > 0.5f)
+		y = y + x - 1;
+	else if (y <= -0.5f)
+		y = y + x + 1;
+	else
+		y = y + x;
+	if (u.i >> 31)
+		y = -y;
+	return y;
 }
 
 int ALWAYS_INLINE fast_roundf(float x)
 {
-    int i = 0;
-#if 0
-    asm volatile (
-            "vcvtr.s32.f32  %[r], %[x]\n"
-            : [r] "=t" (i)
-            : [x] "t"  (x));
-#endif
-    return i;
+    return (int)roundf(x);
 }
 
 #pragma GCC diagnostic push
@@ -109,15 +178,18 @@ float fast_cbrtf(float x)
    return v.x;
 }
 
+static float riscv_fabsf(float fnumber)
+
+{
+
+   *( (int *) &fnumber) &=0x7FFFFFFF;
+
+  return fnumber;
+}
+
 float ALWAYS_INLINE fast_fabsf(float x)
 {
-#if 0
-    asm volatile (
-            "vabs.f32  %[r], %[x]\n"
-            : [r] "=t" (x)
-            : [x] "t"  (x));
-#endif
-    return x;
+	return riscv_fabsf(x); 
 }
 
 inline float fast_atanf(float xx)

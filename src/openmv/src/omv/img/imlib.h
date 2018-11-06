@@ -684,7 +684,7 @@ float IMAGE_Y_RATIO = ((float) _source_rect->s.h) / ((float) _target_rect->s.h);
 
 // Old Image Macros - Will be refactor and removed. But, only after making sure through testing new macros work.
 
-#if 0 /*hutu*/
+#if 0
 #define IM_SWAP16(x) __REV16(x) // Swap bottom two chars in short.
 #define IM_SWAP32(x) __REV32(x) // Swap bottom two shorts in long.
 #else

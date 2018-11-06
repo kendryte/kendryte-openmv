@@ -828,9 +828,16 @@ int imlib_image_mean(image_t *src, int *r_mean, int *g_mean, int *b_mean)
 
 #define __SMMLA(ARG1,ARG2,ARG3)          ( (int32_t)((((int64_t)(ARG1) * (ARG2)) + \
                                                       ((int64_t)(ARG3) << 32U)     ) >> 32U))
-
-/*hutu:should rewrite*/
-#define __SMLAD(ARG1,ARG2,ARG3) (ARG3)
+typedef int q31_t;
+static inline uint32_t __SMLAD(
+  uint32_t x,
+  uint32_t y,
+  uint32_t sum)
+  {
+    return ((uint32_t)(((((q31_t)x << 16) >> 16) * (((q31_t)y << 16) >> 16)) +
+                       ((((q31_t)x      ) >> 16) * (((q31_t)y      ) >> 16)) +
+                       ( ((q31_t)sum    )                                  )   ));
+  }
 
 // One pass standard deviation.
 int imlib_image_std(image_t *src)

@@ -72,7 +72,7 @@ void imlib_find_hog(image_t *src, rectangle_t *roi, int cell_size)
             }
 
             // Normalize the last block
-            //k = sqrtf(k);
+            k = sqrtf(k);
             for (int i=hog_index; i<(hog_index+(N_BINS*4)); i++) {
                     hog[i] = hog[i]/k;
             }
