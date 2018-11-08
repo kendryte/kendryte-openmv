@@ -47,69 +47,9 @@ static char heap[MPY_HEAP_SIZE];
 #endif
 
 void do_str(const char *src, mp_parse_input_kind_t input_kind);
-#if 0
-void mpy_main(void)
-{
-    uint64_t core_id = current_coreid();
-    plic_init();
-	set_csr(mie, MIP_MEIP);
-	set_csr(mstatus, MSTATUS_MIE);
-    if (core_id == 0)
-    {
-        sysctl_pll_set_freq(SYSCTL_PLL0,320000000);
-		sysctl_pll_enable(SYSCTL_PLL1);
-		sysctl_pll_set_freq(SYSCTL_PLL1,160000000);
-		uarths_init();
-		printf("[lichee]:pll0 freq:%d\r\n",sysctl_clock_get_freq(SYSCTL_CLOCK_PLL0));
-		printf("[lichee]:pll1 freq:%d\r\n",sysctl_clock_get_freq(SYSCTL_CLOCK_PLL1));
-		sysctl->power_sel.power_mode_sel6 = 1;
-		sysctl->power_sel.power_mode_sel7 = 1;
-		//uarths_set_irq(UARTHS_RECEIVE,on_irq_uarths_recv,NULL,1);
-		//uarths_config(115200,UART_STOP_1);
-		uarths_init();
-        uint8_t manuf_id, device_id;
-		while (1) {
-			w25qxx_init(3);
-			w25qxx_read_id(&manuf_id, &device_id);
-			if (manuf_id != 0xFF && manuf_id != 0x00 && device_id != 0xFF && device_id != 0x00)
-			    break;
-		}
-		w25qxx_enable_quad_mode();
-        printf("manuf_id:0x%02x,device_id:0x%02x\n", manuf_id, device_id);
-		my_spiffs_init();
-	    int stack_dummy;
-	    stack_top = (char*)&stack_dummy;
-	    #if MICROPY_ENABLE_GC
-	    gc_init(heap, heap + sizeof(heap));
-	    #endif
-	    mp_init();
-	    readline_init0();
-	    readline_process_char(27);
-	    pyexec_frozen_module("boot.py");
-	    #if MICROPY_REPL_EVENT_DRIVEN
-            pyexec_event_repl_init();
-            char c = 0;
-            for (;;) {
-                //int cnt = read_ringbuff(&c,1);
-                //if(cnt==0){continue;}
-                c = (char)uarths_getc();
-                if(c == 0xff){continue;}
-                if(pyexec_event_repl_process_char(c)) {
-                    break;
-                }
-            }
-	    #else
-	        pyexec_friendly_repl();
-	    #endif
-	    mp_deinit();
-	    msleep(1);
-	    printf("prower off\n");
-	    return 0;
-    }
-    while (1);
-}
-#else
-#define PLL0_OUTPUT_FREQ 600000000UL
+
+//CPU core 400M Hz (PLL0_OUTPUT_FREQ/2)
+#define PLL0_OUTPUT_FREQ 800000000UL
 #define PLL1_OUTPUT_FREQ 160000000UL
 #define PLL2_OUTPUT_FREQ 45158400UL
 
@@ -147,6 +87,25 @@ static void pll_init()
     //printf("PLL2 output test:(real)%ld  (measure)%ld\n", PLL2_OUTPUT_FREQ, PLL2_OUTPUT_FREQ / 16);
 }
 
+#if 0
+extern uint32_t g_lcd_gram0[38400];
+extern uint32_t g_lcd_gram1[38400];
+
+extern volatile uint8_t g_dvp_finish_flag;
+extern volatile uint8_t g_ram_mux;
+
+static void dvp_lcd_show()
+{
+    /* ai cal finish*/
+    if (g_dvp_finish_flag != 0)
+    {
+        g_dvp_finish_flag = 0;
+        /* display pic*/
+        g_ram_mux ^= 0x01;
+        lcd_draw_picture(0, 0, 320, 240, g_ram_mux ? g_lcd_gram0 : g_lcd_gram1);
+    }
+}
+#endif
 void mpy_main(void)
 {
     uint64_t core_id = current_coreid();
@@ -172,7 +131,7 @@ void mpy_main(void)
 			    break;
 		}
 		w25qxx_enable_quad_mode();
-        printf("manuf_id:0x%02x,device_id:0x%02x\n", manuf_id, device_id);
+        printf("flash init:manuf_id:0x%02x,device_id:0x%02x\n", manuf_id, device_id);
 		my_spiffs_init();
 	    int stack_dummy;
 	    stack_top = (char*)&stack_dummy;
@@ -190,10 +149,15 @@ void mpy_main(void)
                 //int cnt = read_ringbuff(&c,1);
                 //if(cnt==0){continue;}
                 c = (char)uarths_getc();
-                if(c == 0xff){continue;}
+                if(c == 0xff)
+                {
+                    //dvp_lcd_show();
+                    continue;
+                }
                 if(pyexec_event_repl_process_char(c)) {
                     break;
                 }
+                //dvp_lcd_show();
             }
 	    #else
 	        pyexec_friendly_repl();
@@ -201,12 +165,11 @@ void mpy_main(void)
 	    mp_deinit();
 	    msleep(1);
 	    printf("prower off\n");
-	    return 0;
+	    return;
     }
     while (1);
 }
 
-#endif
 void do_str(const char *src, mp_parse_input_kind_t input_kind) {
     nlr_buf_t nlr;
     if (nlr_push(&nlr) == 0) {

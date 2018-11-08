@@ -15,10 +15,12 @@
 #include <stdio.h>
 #include "bsp.h"
 extern void mpy_main(void);
+//extern int dvp_ov_main(void);
 int main()
 {
     uint64_t core = current_coreid();
-    printf("Core %ld Hello world\n", core);
+    //printf("Core %ld Hello world\n", core);
     mpy_main();
+    //dvp_ov_main();
     while(1);
 }

@@ -46,8 +46,15 @@
 
 #include "encoding.h"
 #include "sysctl.h"
+#include "stdio.h"
 
 unsigned int systick_current_millis()
 {
-     return (unsigned int)(read_csr(mcycle)/sysctl_clock_get_freq(SYSCTL_CLOCK_CPU)/1000);
+     return (unsigned int)(read_csr(mcycle)/(sysctl_clock_get_freq(SYSCTL_CLOCK_CPU)/1000));
+}
+
+void sys_delay_ms(int ms)
+{
+    unsigned int current_ms = systick_current_millis();
+    while((systick_current_millis() - current_ms) < ms){}
 }

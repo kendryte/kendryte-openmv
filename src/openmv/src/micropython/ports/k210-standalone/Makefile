@@ -147,14 +147,15 @@ MODULES_SRC_C= \
 		$(MPY_MOD_PATH)/machine/machine_pin.c \
 		$(MPY_MOD_PATH)/machine/machine_pwm.c \
 		$(MPY_MOD_PATH)/machine/machine_timer.c\
-		$(MPY_MOD_PATH)/machine/machine_st7789.c\
-		$(MPY_MOD_PATH)/machine/machine_ov2640.c\
+		$(MPY_MOD_PATH)/machine/machine_nt35310.c\
+		$(MPY_MOD_PATH)/machine/machine_ov5640.c\
 		$(MPY_MOD_PATH)/machine/machine_burner.c\
 		$(MPY_MOD_PATH)/machine/machine_face_detect.c\
 		$(MPY_MOD_PATH)/machine/machine_spiflash.c\
 		$(MPY_MOD_PATH)/machine/machine_zmodem.c\
 		$(MPY_MOD_PATH)/machine/machine_fpioa.c\
-		$(MPY_MOD_PATH)/machine/machine_ws2812.c
+		$(MPY_MOD_PATH)/machine/machine_ws2812.c\
+		$(MPY_MOD_PATH)/machine/machine_led.c
 
 LIB_SRC_C ?=
 MICROPY_FATFS=1
@@ -174,7 +175,7 @@ FS_SRC_C = \
 		file_io.c
 
 BOARD_DRIVERS = $(BOARD_DRIVERS_PATH)/lcd.c\
-				$(BOARD_DRIVERS_PATH)/st7789.c\
+				$(BOARD_DRIVERS_PATH)/nt35310.c\
 				$(BOARD_DRIVERS_PATH)/ov2640.c\
 				$(BOARD_DRIVERS_PATH)/ov5640.c\
 				$(BOARD_DRIVERS_PATH)/w25qxx.c\
@@ -182,7 +183,8 @@ BOARD_DRIVERS = $(BOARD_DRIVERS_PATH)/lcd.c\
 				$(BOARD_DRIVERS_PATH)/region_layer.c\
 				$(BOARD_DRIVERS_PATH)/uart_core.c\
 				$(BOARD_DRIVERS_PATH)/ws2812b.c\
-				$(BOARD_DRIVERS_PATH)/systick.c
+				$(BOARD_DRIVERS_PATH)/systick.c\
+				$(BOARD_DRIVERS_PATH)/led.c
 
 MPY_LIB_SRC = lib/timeutils/timeutils.c \
 			  lib/utils/sys_stdio_mphal.c

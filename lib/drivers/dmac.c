@@ -48,7 +48,7 @@ uint64_t dmac_read_channel_id(dmac_channel_number_t channel_num)
     return dmac->channel[channel_num].axi_id;
 }
 
-static void dmac_enable(void)
+void dmac_enable(void)
 {
     dmac_cfg_u_t  dmac_cfg;
 

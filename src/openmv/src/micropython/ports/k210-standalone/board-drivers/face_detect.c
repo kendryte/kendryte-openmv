@@ -354,7 +354,7 @@ void ai_draw_label(uint32_t *ptr)
 														  class, 
 														  (uint8_t)(object_info.object[i].prob * 100));
 				*/
-				lcd_draw_rectangle_cpu(ptr, object_info.object[i].x1,
+				lcd_draw_rectangle(ptr, object_info.object[i].x1,
 											object_info.object[i].y1,
 											object_info.object[i].x2, 
 											object_info.object[i].y2, RED);

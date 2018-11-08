@@ -25,3 +25,5 @@
  */
 
 unsigned int systick_current_millis();
+void sys_delay_ms(int ms);
+

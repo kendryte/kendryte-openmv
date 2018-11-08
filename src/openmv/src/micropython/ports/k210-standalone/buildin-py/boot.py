@@ -14,10 +14,25 @@ file_list = os.ls()
 for i in range(len(file_list)):
     if file_list[i] == '/init.py':
         import init
-ov=machine.ov2640()
-ov.init()
-st=machine.st7789()
+#lcd init
+st=machine.nt35310()
 st.init()
-demo=machine.demo_face_detect()
-demo.init()
+#ov init
+ov=machine.ov5640()
+ov.init()
+ov.lcdshow()
+
+#demo=machine.demo_face_detect()
+#demo.init()
+
+# for led
+led=machine.led()
+led.init()
+led.left_on()
+led.right_on()
+
+tripleled=machine.ws2812()
+tripleled.init()
+tripleled.green()
+
 buf=bytearray(320*240*2)

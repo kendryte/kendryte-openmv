@@ -1432,6 +1432,9 @@ void dmac_set_single_mode(dmac_channel_number_t channel_num,
  */
 void dmac_wait_done(dmac_channel_number_t channel_num);
 
+void dmac_enable(void);
+
+
 #ifdef __cplusplus
 }
 #endif
