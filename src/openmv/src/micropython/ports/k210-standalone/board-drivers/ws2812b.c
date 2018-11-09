@@ -430,7 +430,7 @@ int spi_normal_send_dma_ws2812(dmac_channel_number_t channel_num, uint8_t spi_bu
 	dmac->chen = 0x0101 << channel_num;
 
 	spi_handle->ser = chip_sel;
-	while ((dmac->channel[channel_num].intstatus & 0x02) == 0)
+	while (!(readq(&dmac->channel[channel_num].intstatus) & 0x2))
 			;
 
 

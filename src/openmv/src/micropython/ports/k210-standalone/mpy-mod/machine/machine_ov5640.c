@@ -87,7 +87,7 @@ void _ndelay(uint32_t ms)
             __asm__ __volatile__("nop");
     }
 }
-
+#if 0
 static int dvp_irq(void *ctx)
 {
 
@@ -112,7 +112,7 @@ static int dvp_irq(void *ctx)
 	debug_print("self->buf.buf_sel = %d\n",self->buf.buf_sel);
 	return 0;
 }
-
+#endif
 STATIC void machine_ov5640_print(const mp_print_t *print, mp_obj_t self_in, mp_print_kind_t kind) {
     machine_ov5640_obj_t *self = self_in;
 
@@ -139,6 +139,7 @@ STATIC void machine_ov5640_disable(machine_ov5640_obj_t *self) {
 	self->active = 0;
 }
 
+#if 0
 static void dvp_io_init(void)
 {
 	/* Init DVP IO map and function settings */
@@ -160,6 +161,7 @@ static void dvp_io_init(void)
 	fpioa_set_function(9, FUNC_SCCB_SDA);//23 SIO_D
 
 }
+#endif
 
 uint32_t g_lcd_gram0[38400] __attribute__((aligned(64)));
 uint32_t g_lcd_gram1[38400] __attribute__((aligned(64)));
@@ -172,17 +174,36 @@ typedef void (*on_irq_dvp_callbck)();
 
 static on_irq_dvp_callbck on_irq_dvp_callbck_func = NULL;
 
+static void dvp_lcd_show()
+{
+        timer_set_enable(TIMER_DEVICE_0, TIMER_CHANNEL_0, 0);
+        while (g_dvp_finish_flag == 0)
+            ;
+        g_dvp_finish_flag = 0;
+        /* display pic*/
+        g_ram_mux ^= 0x01;
+        lcd_draw_picture(0, 0, 320, 240, g_ram_mux ? g_lcd_gram0 : g_lcd_gram1);
+}
+
+static void dvp_show_start()
+{
+    timer_init(TIMER_DEVICE_0);
+    timer_set_interval(TIMER_DEVICE_0, TIMER_CHANNEL_0, 100);
+    timer_set_irq(TIMER_DEVICE_0, TIMER_CHANNEL_0, dvp_lcd_show, 1);//1 is lowest priority
+    timer_set_enable(TIMER_DEVICE_0, TIMER_CHANNEL_0, 1);
+}
+
 static int on_irq_dvp(void* ctx)
 {
     if (dvp_get_interrupt(DVP_STS_FRAME_FINISH))
     {
         /* switch gram */
-        //dvp_set_display_addr(g_ram_mux ? (uint32_t)g_lcd_gram0 : (uint32_t)g_lcd_gram1);
-        dvp_set_display_addr((uint32_t)g_lcd_gram0);
+        dvp_set_display_addr(g_ram_mux ? (uint32_t)g_lcd_gram0 : (uint32_t)g_lcd_gram1);
+
         dvp_clear_interrupt(DVP_STS_FRAME_FINISH);
+        g_dvp_finish_flag = 1;
         
-        g_dvp_finish_flag ++;
-        if((on_irq_dvp_callbck_func) && lcd_init_flag)
+        if(on_irq_dvp_callbck_func && lcd_init_flag)
             on_irq_dvp_callbck_func();
     }
     else
@@ -194,22 +215,9 @@ static int on_irq_dvp(void* ctx)
     return 0;
 }
 
-static void dvp_lcd_show()
-{
-    /* ai cal finish*/
-    if (g_dvp_finish_flag >= 2)
-    {
-        g_dvp_finish_flag = 0;
-        /* display pic*/
-        g_ram_mux ^= 0x01;
-        //lcd_draw_picture(0, 0, 320, 240, g_ram_mux ? g_lcd_gram0 : g_lcd_gram1);
-        lcd_draw_picture(0, 0, 320, 240, g_lcd_gram0);
-    }
-}
-
 static void dvp_lcd_show_register()
 {
-    on_irq_dvp_callbck_func = dvp_lcd_show;
+    on_irq_dvp_callbck_func = dvp_show_start;
 }
 
 STATIC mp_obj_t machine_ov5640_init_helper(machine_ov5640_obj_t *self) {
@@ -231,7 +239,7 @@ STATIC mp_obj_t machine_ov5640_init_helper(machine_ov5640_obj_t *self) {
 
     /* DVP interrupt config */
     printf("DVP interrupt config\n");
-    plic_set_priority(IRQN_DVP_INTERRUPT, 1);
+    plic_set_priority(IRQN_DVP_INTERRUPT, 2);
     plic_irq_register(IRQN_DVP_INTERRUPT, on_irq_dvp, NULL);
     plic_irq_enable(IRQN_DVP_INTERRUPT);
 
@@ -260,8 +268,8 @@ STATIC MP_DEFINE_CONST_FUN_OBJ_1(machine_ov5640_deinit_obj, machine_ov5640_deini
 
 STATIC mp_obj_t machine_ov5640_get_image(mp_obj_t self_in,mp_obj_t buf) {
     machine_ov5640_obj_t* self = self_in;
-	uint32_t length = 0;
-	uint8_t* buf_image = 0;
+//	uint32_t length = 0;
+//	uint8_t* buf_image = 0;
 	//mp_obj_list_get(buf,&length,&item);
 	mp_buffer_info_t bufinfo;
     mp_get_buffer_raise(buf, &bufinfo, MP_BUFFER_WRITE);
@@ -282,7 +290,7 @@ STATIC mp_obj_t machine_ov5640_init(mp_obj_t self_in) {
 STATIC MP_DEFINE_CONST_FUN_OBJ_1(machine_ov5640_init_obj, machine_ov5640_init);
 
 STATIC mp_obj_t machine_ov5640_lcdshow(mp_obj_t self_in) {
-	machine_ov5640_obj_t* self = self_in;
+//	machine_ov5640_obj_t* self = self_in;
     dvp_lcd_show_register();
     return mp_const_none;
 }
