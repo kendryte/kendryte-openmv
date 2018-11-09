@@ -124,7 +124,7 @@ void dvp_init(uint8_t reg_len)
     sysctl_clock_enable(SYSCTL_CLOCK_DVP);
     sysctl_reset(SYSCTL_RESET_DVP);
     dvp->cmos_cfg &= (~DVP_CMOS_CLK_DIV_MASK);
-    dvp->cmos_cfg |= DVP_CMOS_CLK_DIV(0) | DVP_CMOS_CLK_ENABLE;
+    dvp->cmos_cfg |= DVP_CMOS_CLK_DIV(1) | DVP_CMOS_CLK_ENABLE;
     dvp_sccb_clk_init();
     dvp_reset();
 }
