@@ -35,6 +35,9 @@
 #include "uarths.h"
 #include "lcd.h"
 #include "spiffs-port.h"
+#include "framebuffer.h"
+#include "py_image.h"
+#include "fb_alloc.h"
 #include <malloc.h>
 #define UART_BUF_LENGTH_MAX 269
 #define MPY_HEAP_SIZE 1 * 1024 * 1024
@@ -141,8 +144,14 @@ void mpy_main(void)
 	    mp_init();
 	    readline_init0();
 	    readline_process_char(27);
+		fb_alloc_init0();
+		printf("_fb_alloc_point_to:%x\n",_fballoc);
+		memset(MAIN_FB(), 0, sizeof(*MAIN_FB()));
+		MAIN_FB()->pixels = (uint8_t *)g_framebuffer;
+		printf("_fb_base_point_to:%x\n",MAIN_FB()->pixels);
+		
 	    pyexec_frozen_module("boot.py");
-	    #if MICROPY_REPL_EVENT_DRIVEN
+        #if MICROPY_REPL_EVENT_DRIVEN
             pyexec_event_repl_init();
             char c = 0;
             for (;;) {

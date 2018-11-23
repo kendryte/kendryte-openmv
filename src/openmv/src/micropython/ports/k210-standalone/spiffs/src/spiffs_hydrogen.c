@@ -1442,7 +1442,7 @@ s32_t SPIFFS_vis(spiffs *fs) {
   spiffs_printf("page_alloc:  "_SPIPRIi"\n", fs->stats_p_allocated);
   spiffs_printf("page_delet:  "_SPIPRIi"\n", fs->stats_p_deleted);
   SPIFFS_UNLOCK(fs);
-  u32_t total, used;
+  u32_t total=0, used=0;
   SPIFFS_info(fs, &total, &used);
   spiffs_printf("used:        "_SPIPRIi" of "_SPIPRIi"\n", used, total);
   return res;

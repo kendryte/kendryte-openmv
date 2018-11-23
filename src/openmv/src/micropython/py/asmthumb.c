@@ -23,7 +23,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-
+#if 0
 #include <stdio.h>
 #include <assert.h>
 #include <string.h>
@@ -388,3 +388,4 @@ void asm_thumb_bl_ind(asm_thumb_t *as, uint fun_id, uint reg_temp) {
 }
 
 #endif // MICROPY_EMIT_THUMB || MICROPY_EMIT_INLINE_THUMB
+#endif

@@ -199,6 +199,7 @@ void sensor_init0()
 
     // Set fb_enabled
     JPEG_FB()->enabled = fb_enabled;
+	printf("exit sensor_init0\n");
 }
 
 int sensor_init()
@@ -206,15 +207,15 @@ int sensor_init()
     int init_ret = 0;
 
     /* Do a power cycle */
-    DCMI_PWDN_HIGH();
-    systick_sleep(10);
+   // DCMI_PWDN_HIGH();
+  //  systick_sleep(10);
 
-    DCMI_PWDN_LOW();
-    systick_sleep(10);
+   // DCMI_PWDN_LOW();
+   // systick_sleep(10);
 
     // Initialize the camera bus.
-    cambus_init();
-    systick_sleep(10);
+  //  cambus_init();
+  //  systick_sleep(10);
 
     // Configure the sensor external clock (XCLK) to XCLK_FREQ.
     //
@@ -232,6 +233,7 @@ int sensor_init()
     // OV7725 PCLK when prescalar is disabled (CLKRC[6]=1):
     //  Internal clock = Input clock × PLL multiplier
     //
+   	#if 0
     #if (OMV_XCLK_SOURCE == OMV_XCLK_TIM)
     // Configure external clock timer.
     if (extclk_config(OMV_XCLK_FREQUENCY) != 0) {
@@ -245,6 +247,7 @@ int sensor_init()
     #else
     #error "OMV_XCLK_SOURCE is not set!"
     #endif
+	#endif
 
     /* Reset the sesnor state */
     memset(&sensor, 0, sizeof(sensor_t));
@@ -253,16 +256,16 @@ int sensor_init()
        is connected before initializing cambus and probing the sensor, which in turn
        requires pulling the sensor out of the reset state. So we try to probe the
        sensor with both polarities to determine line state. */
-    sensor.pwdn_pol = ACTIVE_HIGH;
-    sensor.reset_pol = ACTIVE_HIGH;
+    //sensor.pwdn_pol = ACTIVE_HIGH;
+   // sensor.reset_pol = ACTIVE_HIGH;
 
     /* Reset the sensor */
-    DCMI_RESET_HIGH();
-    systick_sleep(10);
+   // DCMI_RESET_HIGH();
+   // systick_sleep(10);
 
-    DCMI_RESET_LOW();
-    systick_sleep(10);
-
+  //  DCMI_RESET_LOW();
+  //  systick_sleep(10);
+#if 0
     /* Probe the sensor */
     sensor.slv_addr = cambus_scan();
     if (sensor.slv_addr == 0) {
@@ -296,13 +299,15 @@ int sensor_init()
             }
         }
     }
+#endif
 
     // Clear sensor chip ID.
     sensor.chip_id = 0;
 
     // Set default snapshot function.
     sensor.snapshot = sensor_snapshot;
-
+	//sensor.set_framesize = sensor_set_framesize;
+#if 0
     if (sensor.slv_addr == LEPTON_ID) {
         sensor.chip_id = LEPTON_ID;
         if (extclk_config(LEPTON_XCLK_FREQ) != 0) {
@@ -336,12 +341,13 @@ int sensor_init()
             }
         }
     }
+#endif
 
     if (init_ret != 0 ) {
         // Sensor init failed.
         return -4;
     }
-
+#if 0
     /* Configure the DCMI DMA Stream */
     if (dma_config() != 0) {
         // DMA problem
@@ -357,17 +363,21 @@ int sensor_init()
 
     // Disable VSYNC EXTI IRQ
     HAL_NVIC_DisableIRQ(DCMI_VSYNC_IRQN);
-
+#endif
     // Clear fb_enabled flag
     // This is executed only once to initialize the FB enabled flag.
     JPEG_FB()->enabled = 0;
 
     /* All good! */
+	printf("exit sensor_init\n");
     return 0;
 }
 
 int sensor_reset()
 {
+	sensor_init0();
+	sensor_init();
+
     // Reset the sesnor state
     sensor.sde         = 0;
     sensor.pixformat   = 0;
@@ -380,12 +390,14 @@ int sensor_reset()
     if (sensor.reset(&sensor) != 0) {
         return -1;
     }
-
+#if 0
     // Just in case there's a running DMA request.
     HAL_DMA_Abort(&DMAHandle);
 
     // Disable VSYNC EXTI IRQ
     HAL_NVIC_DisableIRQ(DCMI_VSYNC_IRQN);
+#endif
+	printf("exit sensor_reset\n");
     return 0;
 }
 
@@ -878,7 +890,7 @@ int sensor_snapshot(sensor_t *sensor, image_t *image, streaming_cb_t streaming_c
     do {
         // Clear line counter
         line = 0;
-
+#if 0
         // Snapshot start tick
         tick_start = HAL_GetTick();
 
@@ -894,6 +906,7 @@ int sensor_snapshot(sensor_t *sensor, image_t *image, streaming_cb_t streaming_c
             HAL_DCMI_Start_DMA_MB(&DCMIHandle,
                     DCMI_MODE_SNAPSHOT, addr, length/4, h);
         }
+
 
         if (streaming_cb && doublebuf && image->pixels != NULL) {
             // Call streaming callback function with previous frame.
@@ -921,7 +934,7 @@ int sensor_snapshot(sensor_t *sensor, image_t *image, streaming_cb_t streaming_c
 
         // Disable DMA IRQ
         HAL_NVIC_DisableIRQ(DMA2_Stream1_IRQn);
-
+#endif
         // Fix the BPP
         switch (sensor->pixformat) {
             case PIXFORMAT_GRAYSCALE:

@@ -202,6 +202,7 @@ void lcd_draw_rectangle(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint
     tft_write_word(data_buf, ((y2 - y1 + 1) * width + 1) / 2, 0);
 }
 
+
 void lcd_draw_picture(uint16_t x1, uint16_t y1, uint16_t width, uint16_t height, uint32_t *ptr)
 {
     lcd_set_area(x1, y1, x1 + width - 1, y1 + height - 1);

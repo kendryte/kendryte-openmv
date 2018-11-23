@@ -23,7 +23,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-
+#if 0
 #include <stdint.h>
 #include <stdio.h>
 #include <assert.h>
@@ -524,3 +524,4 @@ void asm_x86_call_ind(asm_x86_t *as, size_t fun_id, mp_uint_t n_args, int temp_r
 }
 
 #endif // MICROPY_EMIT_X86
+#endif

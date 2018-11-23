@@ -4,6 +4,7 @@
  */
 
 #include "imlib.h"
+
 #ifdef IMLIB_ENABLE_QRCODES
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //////// "quirc.h"
@@ -62,7 +63,7 @@ void quirc_end(struct quirc *q);
 struct quirc_point {
     int x;
     int y;
-};
+}__attribute__((aligned(8)));
 
 /* This enum describes the various decoder errors which may occur. */
 typedef enum {
@@ -129,7 +130,7 @@ struct quirc_code {
      */
     int                 size;
     uint8_t             cell_bitmap[QUIRC_MAX_BITMAP];
-};
+}__attribute__((aligned(8)));
 
 /* This structure holds the decoded QR-code data */
 struct quirc_data {
@@ -153,7 +154,7 @@ struct quirc_data {
 
     /* ECI assignment number */
     uint32_t    eci;
-};
+}__attribute__((aligned(8)));
 
 /* Return the number of QR-codes identified in the last processed
  * image.
@@ -202,9 +203,9 @@ quirc_decode_error_t quirc_decode(const struct quirc_code *code,
 #define QUIRC_PERSPECTIVE_PARAMS    8
 
 #if QUIRC_MAX_REGIONS < UINT8_MAX
-typedef uint8_t quirc_pixel_t;
+typedef uint8_t quirc_pixel_t __attribute__((aligned(8)));
 #elif QUIRC_MAX_REGIONS < UINT16_MAX
-typedef uint16_t quirc_pixel_t;
+typedef uint16_t quirc_pixel_t __attribute__((aligned(8)));
 #else
 #error "QUIRC_MAX_REGIONS > 65534 is not supported"
 #endif
@@ -213,7 +214,7 @@ struct quirc_region {
     struct quirc_point  seed;
     int                 count;
     int                 capstone;
-};
+}__attribute__((aligned(8)));
 
 struct quirc_capstone {
     int                 ring;
@@ -224,7 +225,7 @@ struct quirc_capstone {
     float               c[QUIRC_PERSPECTIVE_PARAMS];
 
     int                 qr_grid;
-};
+}__attribute__((aligned(8)));
 
 struct quirc_grid {
     /* Capstone indices */
@@ -242,7 +243,7 @@ struct quirc_grid {
     /* Grid size and perspective transform */
     int                 grid_size;
     float               c[QUIRC_PERSPECTIVE_PARAMS];
-};
+}__attribute__((aligned(8)));
 
 struct quirc {
     uint8_t                 *image;
@@ -258,7 +259,7 @@ struct quirc {
 
     int                     num_grids;
     struct quirc_grid       grids[QUIRC_MAX_GRIDS];
-};
+}__attribute__((aligned(8)));
 
 /************************************************************************
  * QR-code version information database
@@ -271,13 +272,13 @@ struct quirc_rs_params {
     uint8_t bs; /* Small block size */
     uint8_t dw; /* Small data words */
     uint8_t ns; /* Number of small blocks */
-};
+}__attribute__((aligned(8)));
 
 struct quirc_version_info {
     uint16_t                data_bytes;
     uint8_t                 apat[QUIRC_MAX_ALIGNMENT];
     struct quirc_rs_params  ecc[4];
-};
+}__attribute__((aligned(8)));
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //////// "version_db.c"
@@ -831,14 +832,13 @@ typedef struct xylf
 {
     int16_t x, y, l, r;
 }
-xylf_t;
+__attribute__((aligned(8))) xylf_t;
 
 static void flood_fill_seed(struct quirc *q, int x, int y, int from, int to,
                             span_func_t func, void *user_data,
                             int depth)
 {
     (void) depth; // unused
-
     lifo_t lifo;
     size_t lifo_len;
     lifo_alloc_all(&lifo, &lifo_len, sizeof(xylf_t));
@@ -859,8 +859,9 @@ static void flood_fill_seed(struct quirc *q, int x, int y, int from, int to,
         for (i = left; i <= right; i++)
             row[i] = to;
 
-        if (func)
+        if (func){
             func(user_data, y, left, right);
+        	}
 
         for(;;) {
             if (lifo_size(&lifo) < lifo_len) {
@@ -996,8 +997,8 @@ static int region_code(struct quirc *q, int x, int y)
     struct quirc_region *box;
     int region;
 
-    if (x < 0 || y < 0 || x >= q->w || y >= q->h)
-        return -1;
+    if (x < 0 || y < 0 || x >= q->w || y >= q->h){
+        return -1;}
 
     pixel = q->pixels[y * q->w + x];
 
@@ -1007,8 +1008,8 @@ static int region_code(struct quirc *q, int x, int y)
     if (pixel == QUIRC_PIXEL_WHITE)
         return -1;
 
-    if (q->num_regions >= QUIRC_MAX_REGIONS)
-        return -1;
+    if (q->num_regions >= QUIRC_MAX_REGIONS){
+        return -1;}
 
     region = q->num_regions;
     box = &q->regions[q->num_regions++];
@@ -1029,7 +1030,7 @@ struct polygon_score_data {
 
     int                 scores[4];
     struct quirc_point  *corners;
-};
+}__attribute__((aligned(8)));
 
 static void find_one_corner(void *user_data, int y, int left, int right)
 {
@@ -1141,11 +1142,15 @@ static void record_capstone(struct quirc *q, int ring, int stone)
 
 static void test_capstone(struct quirc *q, int x, int y, int *pb)
 {
+
     int ring_right = region_code(q, x - pb[4], y);
+	
     int stone = region_code(q, x - pb[4] - pb[3] - pb[2], y);
+	
     int ring_left = region_code(q, x - pb[4] - pb[3] -
                     pb[2] - pb[1] - pb[0],
                     y);
+
     struct quirc_region *stone_reg;
     struct quirc_region *ring_reg;
     int ratio;
@@ -1158,8 +1163,8 @@ static void test_capstone(struct quirc *q, int x, int y, int *pb)
         return;
 
     /* Ring should be disconnected from stone */
-    if (ring_left == stone)
-        return;
+    if (ring_left == stone){
+        return;}
 
     stone_reg = &q->regions[stone];
     ring_reg = &q->regions[ring_left];
@@ -1170,8 +1175,8 @@ static void test_capstone(struct quirc *q, int x, int y, int *pb)
 
     /* Ratio should ideally be 37.5 */
     ratio = stone_reg->count * 100 / ring_reg->count;
-    if (ratio < 10 || ratio > 70)
-        return;
+    if (ratio < 10 || ratio > 70){
+        return;}
 
     record_capstone(q, ring_left, stone);
 }
@@ -1204,13 +1209,15 @@ static void finder_scan(struct quirc *q, int y)
                 avg = (pb[0] + pb[1] + pb[3] + pb[4]) / 4;
                 err = avg * 3 / 4;
 
-                for (i = 0; i < 5; i++)
+                for (i = 0; i < 5; i++){
                     if (pb[i] < check[i] * avg - err ||
-                        pb[i] > check[i] * avg + err)
-                        ok = 0;
+                        pb[i] > check[i] * avg + err){
+                        ok = 0;}
+                	}
 
-                if (ok)
+                if (ok){
                     test_capstone(q, x, y, pb);
+				}
             }
         }
 
@@ -1742,12 +1749,12 @@ fail:
 struct neighbour {
     int     index;
     float   distance;
-};
+}__attribute__((aligned(8)));
 
 struct neighbour_list {
     struct neighbour    n[QUIRC_MAX_CAPSTONES];
     int                 count;
-};
+}__attribute__((aligned(8)));
 
 static void test_neighbours(struct quirc *q, int i,
                             const struct neighbour_list *hlist,
@@ -1860,15 +1867,15 @@ uint8_t *quirc_begin(struct quirc *q, int *w, int *h)
 void quirc_end(struct quirc *q)
 {
     int i;
-
     pixels_setup(q);
     threshold(q);
 
-    for (i = 0; i < q->h; i++)
-        finder_scan(q, i);
+    for (i = 0; i < q->h; i++){
+        finder_scan(q, i);}
 
-    for (i = 0; i < q->num_capstones; i++)
-        test_grouping(q, i);
+    for (i = 0; i < q->num_capstones; i++){
+        test_grouping(q, i);}
+	
 }
 
 void quirc_extract(const struct quirc *q, int index,
@@ -1933,7 +1940,7 @@ struct galois_field {
     int             p;
     const uint8_t   *log;
     const uint8_t   *exp;
-};
+}__attribute__((aligned(8)));
 
 static const uint8_t gf16_exp[16] = {
     0x01, 0x02, 0x04, 0x08, 0x03, 0x06, 0x0c, 0x0b,
@@ -2024,7 +2031,7 @@ static const uint8_t gf256_log[256] = {
 const static struct galois_field gf256 = {
     .p = 255,
     .log = gf256_log,
-    .exp = gf256_exp
+    .exp = gf256_exp,
 };
 
 /************************************************************************
@@ -2308,7 +2315,7 @@ struct datastream {
     int     ptr;
 
     uint8_t data[QUIRC_MAX_PAYLOAD];
-};
+}__attribute__((aligned(8)));
 
 static inline int grid_bit(const struct quirc_code *code, int x, int y)
 {

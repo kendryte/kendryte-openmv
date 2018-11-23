@@ -16,8 +16,8 @@ typedef struct framebuffer {
     int w,h;
     int u,v;
     int bpp;
-    uint8_t pixels[];
-} framebuffer_t;
+    uint8_t *pixels;
+}__attribute__((aligned(8))) framebuffer_t;
 
 extern framebuffer_t *fb_framebuffer;
 
@@ -28,7 +28,9 @@ typedef struct jpegbuffer {
     int quality;
     mutex_t lock;
     uint8_t pixels[];
-} jpegbuffer_t;
+}__attribute__((aligned(8))) jpegbuffer_t;
+
+extern framebuffer_t *fb_framebuffer;
 
 extern jpegbuffer_t *jpeg_fb_framebuffer;
 

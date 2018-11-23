@@ -10,7 +10,7 @@ typedef struct imlib_similatiry_line_op_state {
     int *sumBucketsOfX, *sumBucketsOfY, *sum2BucketsOfX, *sum2BucketsOfY, *sum2Buckets;
     float similarity_sum, similarity_sum_2, similarity_min, similarity_max;
     int lines_processed;
-} imlib_similatiry_line_op_state_t;
+}__attribute__((aligned(8))) imlib_similatiry_line_op_state_t;
 
 void imlib_similarity_line_op(image_t *img, int line, void *other, void *data, bool vflipped)
 {

@@ -9,7 +9,7 @@ typedef struct xylf
 {
     int16_t x, y, l, r;
 }
-xylf_t;
+__attribute__((aligned(8)))xylf_t;
 
 void imlib_find_blobs(list_t *out, image_t *ptr, rectangle_t *roi, unsigned int x_stride, unsigned int y_stride,
                      list_t *thresholds, bool invert, unsigned int area_threshold, unsigned int pixels_threshold,

@@ -23,7 +23,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-
+#if 0
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
@@ -343,3 +343,4 @@ const emit_inline_asm_method_table_t emit_inline_xtensa_method_table = {
 };
 
 #endif // MICROPY_EMIT_INLINE_XTENSA
+#endif

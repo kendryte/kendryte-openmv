@@ -470,12 +470,12 @@ struct coorlist
 {
   int16_t x,y;
   struct coorlist * next;
-};
+}__attribute__((aligned(8)));
 
 /*----------------------------------------------------------------------------*/
 /** A point (or pixel).
  */
-struct lsd_point {int16_t x,y;};
+struct lsd_point {int16_t x,y;}__attribute__((aligned(8)));
 
 
 /*----------------------------------------------------------------------------*/
@@ -570,7 +570,7 @@ typedef struct ntuple_list_s
   unsigned int max_size;
   unsigned int dim;
   double * values;
-} * ntuple_list;
+} * __attribute__((aligned(8)))ntuple_list;
 
 /*----------------------------------------------------------------------------*/
 /** Free memory used in n-tuple 'in'.
@@ -673,7 +673,7 @@ typedef struct image_char_s
 {
   unsigned char * data;
   unsigned int xsize,ysize;
-} * image_char;
+} * __attribute__((aligned(8)))image_char;
 
 /*----------------------------------------------------------------------------*/
 /** Free memory used in image_char 'i'.
@@ -770,7 +770,7 @@ typedef struct image_int_s
 {
   int16_t * data;
   unsigned int xsize,ysize;
-} * image_int;
+} * __attribute__((aligned(8)))image_int;
 
 /*----------------------------------------------------------------------------*/
 /** Free memory used in image_int 'i'.
@@ -836,7 +836,7 @@ typedef struct image_double_s
 {
   double * data;
   unsigned int xsize,ysize;
-} * image_double;
+} * __attribute__((aligned(8)))image_double;
 
 /*----------------------------------------------------------------------------*/
 /** Free memory used in image_double 'i'.
@@ -1542,7 +1542,7 @@ struct rect
   double dx,dy;        /* (dx,dy) is vector oriented as the line segment */
   double prec;         /* tolerance angle */
   double p;            /* probability of a point with angle within 'prec' */
-};
+}__attribute__((aligned(8)));
 
 /*----------------------------------------------------------------------------*/
 /** Copy one rectangle structure to another.
@@ -1629,7 +1629,7 @@ typedef struct
   double vy[4];  /* rectangle's corner Y coordinates in circular order */
   double ys,ye;  /* start and end Y values of current 'column' */
   int x,y;       /* coordinates of currently explored pixel */
-} rect_iter;
+}__attribute__((aligned(8))) rect_iter;
 
 /*----------------------------------------------------------------------------*/
 /** Interpolate y value corresponding to 'x' value given, in

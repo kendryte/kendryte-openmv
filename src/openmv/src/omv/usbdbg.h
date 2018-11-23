@@ -47,7 +47,7 @@ enum usbdbg_cmd {
     USBDBG_FB_ENABLE        =0x0D,
     USBDBG_TX_BUF_LEN       =0x8E,
     USBDBG_TX_BUF           =0x8F
-};
+}__attribute__((aligned(8)));
 void usbdbg_init();
 bool usbdbg_script_ready();
 vstr_t *usbdbg_get_script();

@@ -13,7 +13,7 @@ typedef struct {
     uint16_t x;
     uint16_t y;
     uint16_t score;
-} corner_t;
+} __attribute__((aligned(8)))corner_t;
 
 static int s_width=-1;
 static int_fast16_t s_offset0;

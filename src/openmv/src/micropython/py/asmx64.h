@@ -23,6 +23,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+#if 0
 #ifndef MICROPY_INCLUDED_PY_ASMX64_H
 #define MICROPY_INCLUDED_PY_ASMX64_H
 
@@ -210,3 +211,4 @@ void asm_x64_call_ind(asm_x64_t* as, size_t fun_id, int temp_r32);
 #endif // GENERIC_ASM_API
 
 #endif // MICROPY_INCLUDED_PY_ASMX64_H
+#endif

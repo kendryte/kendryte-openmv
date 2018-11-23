@@ -228,6 +228,7 @@ extern const struct _mp_obj_module_t uos_module;
 //hutu:omv image module
 extern const struct _mp_obj_module_t image_module;
 extern const struct _mp_obj_module_t omv_module;
+extern const struct _mp_obj_module_t sensor_module;
 
 /*hutu:register omv image module*/
 #define MICROPY_PORT_BUILTIN_MODULES \
@@ -236,6 +237,7 @@ extern const struct _mp_obj_module_t omv_module;
     { MP_OBJ_NEW_QSTR(MP_QSTR_os), (mp_obj_t)&uos_module }, \
     { MP_OBJ_NEW_QSTR(MP_QSTR_image),   (mp_obj_t)&image_module }, \
     { MP_OBJ_NEW_QSTR(MP_QSTR_omv),   (mp_obj_t)&omv_module }, \
+{ MP_OBJ_NEW_QSTR(MP_QSTR_sensor),   (mp_obj_t)&sensor_module }, \
 
 
 #define MICROPY_PORT_BUILTIN_MODULE_WEAK_LINKS \

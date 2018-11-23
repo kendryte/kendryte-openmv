@@ -53,7 +53,7 @@ void imlib_negate(image_t *img)
 typedef struct imlib_replace_line_op_state {
     bool hmirror, vflip;
     image_t *mask;
-} imlib_replace_line_op_state_t;
+} __attribute__((aligned(8)))imlib_replace_line_op_state_t;
 
 static void imlib_replace_line_op(image_t *img, int line, void *other, void *data, bool vflipped)
 {
@@ -178,7 +178,7 @@ void imlib_add(image_t *img, const char *path, image_t *other, int scalar, image
 typedef struct imlib_sub_line_op_state {
     bool reverse;
     image_t *mask;
-} imlib_sub_line_op_state_t;
+} __attribute__((aligned(8)))imlib_sub_line_op_state_t;
 
 static void imlib_sub_line_op(image_t *img, int line, void *other, void *data, bool vflipped)
 {
@@ -252,7 +252,7 @@ void imlib_sub(image_t *img, const char *path, image_t *other, int scalar, bool 
 typedef struct imlib_mul_line_op_state {
     bool invert;
     image_t *mask;
-} imlib_mul_line_op_state_t;
+}__attribute__((aligned(8))) imlib_mul_line_op_state_t;
 
 static void imlib_mul_line_op(image_t *img, int line, void *other, void *data, bool vflipped)
 {
@@ -336,7 +336,7 @@ void imlib_mul(image_t *img, const char *path, image_t *other, int scalar, bool 
 typedef struct imlib_div_line_op_state {
     bool invert;
     image_t *mask;
-} imlib_div_line_op_state_t;
+} __attribute__((aligned(8)))imlib_div_line_op_state_t;
 
 static void imlib_div_line_op(image_t *img, int line, void *other, void *data, bool vflipped)
 {
@@ -577,7 +577,7 @@ void imlib_difference(image_t *img, const char *path, image_t *other, int scalar
 typedef struct imlib_blend_line_op_state {
     float alpha;
     image_t *mask;
-} imlib_blend_line_op_t;
+} __attribute__((aligned(8)))imlib_blend_line_op_t;
 
 static void imlib_blend_line_op(image_t *img, int line, void *other, void *data, bool vflipped)
 {

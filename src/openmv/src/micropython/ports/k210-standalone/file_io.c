@@ -149,6 +149,7 @@ STATIC const mp_arg_t file_open_args[] = {
     o->base.type = type;
     uint8_t *temp_obj_patch;
     spiffs_file fd;
+    if(file_name ==NULL) return NULL;
     if(file_name[0]!='/')
     {
         temp_obj_patch=malloc(strlen(file_name));

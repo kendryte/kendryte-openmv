@@ -1,2 +1,0 @@
-./micropython/py/mkrules.mk:$(TOP)/mpy-cross/mpy-cross: $(TOP)/py/*.[ch] $(TOP)/mpy-cross/*.[ch] $(TOP)/ports/windows/fmode.c
-./micropython/mpy-cross/Makefile:	SRC_C += ports/windows/fmode.c

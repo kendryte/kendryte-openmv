@@ -15,7 +15,7 @@ typedef struct ring_buffer {
    volatile uint32_t head;
    volatile uint32_t tail;
    uint8_t data[BUFFER_SIZE];
-} ring_buf_t;
+} __attribute__((aligned(8)))ring_buf_t;
 
 void ring_buf_init(ring_buf_t *buf);
 int ring_buf_empty(ring_buf_t *buf);

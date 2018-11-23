@@ -146,7 +146,7 @@ typedef union{
         uint32_t e : 11;
         uint32_t s : 1;
     };
-}exp_t;
+}__attribute__((aligned(8)))exp_t;
 
 float fast_expf(float x)
 {

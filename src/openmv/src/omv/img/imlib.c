@@ -669,7 +669,7 @@ void imlib_lens_corr(image_t *img, float strength, float zoom)
     zoom = 1 / zoom;
     int halfWidth = img->w / 2;
     int halfHeight = img->h / 2;
-    float lens_corr_radius = strength / fast_sqrtf((img->w * img->w) + (img->h * img->h));
+    volatile float lens_corr_radius = strength / fast_sqrtf((img->w * img->w) + (img->h * img->h));
 
     switch(img->bpp) {
         case IMAGE_BPP_BINARY: {
@@ -682,15 +682,15 @@ void imlib_lens_corr(image_t *img, float strength, float zoom)
                 uint32_t *row_ptr = IMAGE_COMPUTE_BINARY_PIXEL_ROW_PTR(img, y);
                 int newY = y - halfHeight;
                 int newY2 = newY * newY;
-                float zoomedY = newY * zoom;
+                volatile float zoomedY = newY * zoom;
 
                 for (int x = 0, xx = img->w; x < xx; x++) {
                     int newX = x - halfWidth;
                     int newX2 = newX * newX;
-                    float zoomedX = newX * zoom;
+                    volatile float zoomedX = newX * zoom;
 
-                    float r = lens_corr_radius * fast_sqrtf(newX2 + newY2);
-                    float theta = (r < 0.0000001f) ? 1.0f : (fast_atanf(r) / r);
+                    volatile float r = lens_corr_radius * fast_sqrtf(newX2 + newY2);
+                    volatile float theta = (r < 0.0000001f) ? 1.0f : (fast_atanf(r) / r);
                     int sourceX = halfWidth + fast_roundf(theta * zoomedX);
                     int sourceY = halfHeight + fast_roundf(theta * zoomedY);
 
@@ -715,15 +715,15 @@ void imlib_lens_corr(image_t *img, float strength, float zoom)
                 uint8_t *row_ptr = IMAGE_COMPUTE_GRAYSCALE_PIXEL_ROW_PTR(img, y);
                 int newY = y - halfHeight;
                 int newY2 = newY * newY;
-                float zoomedY = newY * zoom;
+                volatile float zoomedY = newY * zoom;
 
                 for (int x = 0, xx = img->w; x < xx; x++) {
                     int newX = x - halfWidth;
                     int newX2 = newX * newX;
-                    float zoomedX = newX * zoom;
+                    volatile float zoomedX = newX * zoom;
 
-                    float r = lens_corr_radius * fast_sqrtf(newX2 + newY2);
-                    float theta = (r < 0.0000001f) ? 1.0f : (fast_atanf(r) / r);
+                    volatile float r = lens_corr_radius * fast_sqrtf(newX2 + newY2);
+                    volatile float theta = (r < 0.0000001f) ? 1.0f : (fast_atanf(r) / r);
                     int sourceX = halfWidth + fast_roundf(theta * zoomedX);
                     int sourceY = halfHeight + fast_roundf(theta * zoomedY);
 
@@ -748,15 +748,15 @@ void imlib_lens_corr(image_t *img, float strength, float zoom)
                 uint16_t *row_ptr = IMAGE_COMPUTE_RGB565_PIXEL_ROW_PTR(img, y);
                 int newY = y - halfHeight;
                 int newY2 = newY * newY;
-                float zoomedY = newY * zoom;
+                volatile float zoomedY = newY * zoom;
 
                 for (int x = 0, xx = img->w; x < xx; x++) {
                     int newX = x - halfWidth;
                     int newX2 = newX * newX;
-                    float zoomedX = newX * zoom;
+                    volatile float zoomedX = newX * zoom;
 
-                    float r = lens_corr_radius * fast_sqrtf(newX2 + newY2);
-                    float theta = (r < 0.0000001f) ? 1.0f : (fast_atanf(r) / r);
+                    volatile float r = lens_corr_radius * fast_sqrtf(newX2 + newY2);
+                    volatile float theta = (r < 0.0000001f) ? 1.0f : (fast_atanf(r) / r);
                     int sourceX = halfWidth + fast_roundf(theta * zoomedX);
                     int sourceY = halfHeight + fast_roundf(theta * zoomedY);
 

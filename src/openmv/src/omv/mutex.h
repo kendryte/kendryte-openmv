@@ -15,7 +15,7 @@
 typedef volatile struct {
     uint32_t tid;
     uint32_t lock;
-} mutex_t;
+}__attribute__((aligned(8))) mutex_t;
 void mutex_init(mutex_t *mutex);
 void mutex_lock(mutex_t *mutex, uint32_t tid);
 int mutex_try_lock(mutex_t *mutex, uint32_t tid);

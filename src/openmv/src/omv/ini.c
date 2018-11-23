@@ -316,7 +316,7 @@ https://github.com/benhoyt/inih
 typedef struct {
     const char* ptr;
     size_t num_left;
-} ini_parse_string_ctx;
+}__attribute__((aligned(8))) ini_parse_string_ctx;
 
 /* Strip whitespace chars off end of given string, in place. Return s. */
 static char* rstrip(char* s)

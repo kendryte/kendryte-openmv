@@ -9,9 +9,9 @@
 #include <mp.h>
 #include "fb_alloc.h"
 #include "framebuffer.h"
+#include "py_image.h"
 
-char _fballoc;
-static char *pointer = &_fballoc;
+static char *pointer = _fballoc;
 
 /*__weak NORETURN*/ void fb_alloc_fail()
 {
@@ -22,19 +22,19 @@ static char *pointer = &_fballoc;
 
 void fb_alloc_init0()
 {
-    pointer = &_fballoc;
+   pointer = _fballoc;
 }
 
-uint32_t fb_avail()
+uint64_t fb_avail()
 {
-    int32_t temp = pointer - ((char *) MAIN_FB_PIXELS()) - sizeof(uint32_t);
+    int64_t temp = pointer - ((char *) MAIN_FB_PIXELS()) - sizeof(uint64_t);
 
-    return (temp < sizeof(uint32_t)) ? 0 : temp;
+    return (temp < sizeof(uint64_t)) ? 0 : temp;
 }
 
 void fb_alloc_mark()
 {
-    char *new_pointer = pointer - sizeof(uint32_t);
+    char *new_pointer = pointer - sizeof(uint64_t);
 
     // Check if allocation overwrites the framebuffer pixels
     if (new_pointer < (char *) MAIN_FB_PIXELS()) {
@@ -47,29 +47,29 @@ void fb_alloc_mark()
     // fb_alloc does not allow regions which are a size of 0 to be alloced,
     // meaning that the value below is always 8 or more but never 4. So,
     // we will use a size value of 4 as a marker in the alloc stack.
-    *((uint32_t *) new_pointer) = sizeof(uint32_t); // Save size.
+    *((uint64_t *) new_pointer) = sizeof(uint64_t); // Save size.
     pointer = new_pointer;
 }
 
 void fb_alloc_free_till_mark()
 {
-    while (pointer < &_fballoc) {
-        int size = *((uint32_t *) pointer);
+    while (pointer < _fballoc) {
+        int size = *((uint64_t *) pointer);
         pointer += size; // Get size and pop.
-        if (size == sizeof(uint32_t)) break; // Break on first marker.
+        if (size == sizeof(uint64_t)) break; // Break on first marker.
     }
 }
 
 // returns null pointer without error if size==0
-void *fb_alloc(uint32_t size)
+void *fb_alloc(uint64_t size)
 {
     if (!size) {
         return NULL;
     }
 
-    size=((size+sizeof(uint32_t)-1)/sizeof(uint32_t))*sizeof(uint32_t);// Round Up
+    size=((size+sizeof(uint64_t)-1)/sizeof(uint64_t))*sizeof(uint64_t);// Round Up
     char *result = pointer - size;
-    char *new_pointer = result - sizeof(uint32_t);
+    char *new_pointer = result - sizeof(uint64_t);
 
     // Check if allocation overwrites the framebuffer pixels
     if (new_pointer < (char *) MAIN_FB_PIXELS()) {
@@ -77,40 +77,40 @@ void *fb_alloc(uint32_t size)
     }
 
     // size is always 4/8/12/etc. so the value below must be 8 or more.
-    *((uint32_t *) new_pointer) = size + sizeof(uint32_t); // Save size.
+    *((uint64_t *) new_pointer) = size + sizeof(uint64_t); // Save size.
     pointer = new_pointer;
     return result;
 }
 
 // returns null pointer without error if passed size==0
-void *fb_alloc0(uint32_t size)
+void *fb_alloc0(uint64_t size)
 {
     void *mem = fb_alloc(size);
     memset(mem, 0, size); // does nothing if size is zero.
     return mem;
 }
 
-void *fb_alloc_all(uint32_t *size)
+void *fb_alloc_all(uint64_t *size)
 {
-    int32_t temp = pointer - ((char *) MAIN_FB_PIXELS()) - sizeof(uint32_t);
+    int64_t temp = pointer - ((char *) MAIN_FB_PIXELS()) - sizeof(uint64_t);
 
-    if (temp < sizeof(uint32_t)) {
+    if (temp < sizeof(uint64_t)) {
         *size = 0;
         return NULL;
     }
 
-    *size = (temp / sizeof(uint32_t)) * sizeof(uint32_t); // Round Down
+    *size = (temp / sizeof(uint64_t)) * sizeof(uint64_t); // Round Down
     char *result = pointer - *size;
-    char *new_pointer = result - sizeof(uint32_t);
+    char *new_pointer = result - sizeof(uint64_t);
 
     // size is always 4/8/12/etc. so the value below must be 8 or more.
-    *((uint32_t *) new_pointer) = *size + sizeof(uint32_t); // Save size.
+    *((uint64_t *) new_pointer) = *size + sizeof(uint64_t); // Save size.
     pointer = new_pointer;
     return result;
 }
 
 // returns null pointer without error if returned size==0
-void *fb_alloc0_all(uint32_t *size)
+void *fb_alloc0_all(uint64_t *size)
 {
     void *mem = fb_alloc_all(size);
     memset(mem, 0, *size); // does nothing if size is zero.
@@ -119,14 +119,15 @@ void *fb_alloc0_all(uint32_t *size)
 
 void fb_free()
 {
-    if (pointer < &_fballoc) {
-        pointer += *((uint32_t *) pointer); // Get size and pop.
+   
+    if (pointer < _fballoc) {
+        pointer += *((uint64_t *) pointer); // Get size and pop.
     }
 }
 
 void fb_free_all()
 {
-    while (pointer < &_fballoc) {
-        pointer += *((uint32_t *) pointer); // Get size and pop.
+    while (pointer < _fballoc) {
+        pointer += *((uint64_t *) pointer); // Get size and pop.
     }
 }

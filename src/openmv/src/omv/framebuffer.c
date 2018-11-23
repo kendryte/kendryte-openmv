@@ -9,9 +9,10 @@
 #include "imlib.h"
 #include "omv_boardconfig.h"
 #include "framebuffer.h"
+#include <stdio.h>
 
-char _fb_base;
-framebuffer_t *fb_framebuffer = (framebuffer_t *) &_fb_base;
+framebuffer_t _fb_base;
+framebuffer_t *fb_framebuffer = (framebuffer_t *)&_fb_base;
 
 char _jpeg_buf;
 jpegbuffer_t *jpeg_fb_framebuffer = (jpegbuffer_t *) &_jpeg_buf;

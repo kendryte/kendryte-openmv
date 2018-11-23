@@ -5,7 +5,7 @@
 typedef struct _tracebuf_t {
     uint8_t idx;
     uint8_t buf[TRACEBUF_SIZE];
-} tracebuf_t;
+}__attribute__((aligned(8))) tracebuf_t;
 
 static tracebuf_t tracebuf;
 

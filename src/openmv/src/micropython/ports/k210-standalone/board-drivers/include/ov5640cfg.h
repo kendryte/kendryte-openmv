@@ -274,7 +274,5 @@ const uint16_t ov5640_init_reg_tbl[][2]=
 	{0x4740, 0X21}, //VSYNC active HIGH
         {0x0000, 0x00}
 };
-
-
 #endif
 

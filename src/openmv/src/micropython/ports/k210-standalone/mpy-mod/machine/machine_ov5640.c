@@ -198,6 +198,7 @@ static int on_irq_dvp(void* ctx)
     if (dvp_get_interrupt(DVP_STS_FRAME_FINISH))
     {
         /* switch gram */
+        
         dvp_set_display_addr(g_ram_mux ? (uint32_t)g_lcd_gram0 : (uint32_t)g_lcd_gram1);
 
         dvp_clear_interrupt(DVP_STS_FRAME_FINISH);
@@ -290,7 +291,6 @@ STATIC mp_obj_t machine_ov5640_init(mp_obj_t self_in) {
 STATIC MP_DEFINE_CONST_FUN_OBJ_1(machine_ov5640_init_obj, machine_ov5640_init);
 
 STATIC mp_obj_t machine_ov5640_lcdshow(mp_obj_t self_in) {
-//	machine_ov5640_obj_t* self = self_in;
     dvp_lcd_show_register();
     return mp_const_none;
 }

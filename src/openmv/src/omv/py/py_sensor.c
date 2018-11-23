@@ -18,10 +18,12 @@
 #include "py_helper.h"
 #include "framebuffer.h"
 #include "systick.h"
+#include <string.h>
 
 extern sensor_t sensor;
 
 static mp_obj_t py_sensor_reset() {
+
     PY_ASSERT_FALSE_MSG(sensor_reset() != 0, "Reset Failed");
     return mp_const_none;
 }
@@ -46,12 +48,33 @@ static mp_obj_t py_sensor_snapshot(uint n_args, const mp_obj_t *args, mp_map_t *
     mp_obj_t image = py_image(0, 0, 0, 0);
 
     // Sanity checks
-    PY_ASSERT_TRUE_MSG((sensor.pixformat != PIXFORMAT_JPEG), "Operation not supported on JPEG");
+    //PY_ASSERT_TRUE_MSG((sensor.pixformat != PIXFORMAT_JPEG), "Operation not supported on JPEG");
 
-    if (sensor.snapshot(&sensor, (image_t*) py_image_cobj(image), NULL)==-1) {
+    /*if (sensor.snapshot(&sensor, (image_t*) py_image_cobj(image), NULL)==-1) {
         nlr_raise(mp_obj_new_exception_msg(&mp_type_RuntimeError, "Sensor Timeout!!"));
         return mp_const_false;
-    }
+    }*/
+
+	    // The user may have changed the MAIN_FB width or height on the last image so we need
+    // to restore that here. We don't have to restore bpp because that's taken care of
+    // already in the code below. Note that we do the JPEG compression above first to save
+    // the FB of whatever the user set it to and now we restore.
+    MAIN_FB()->w = MAIN_FB()->u;
+    MAIN_FB()->h = MAIN_FB()->v;
+
+    // We use the stored frame size to read the whole frame. Note that cropping is
+    // done in the line function using the diemensions stored in MAIN_FB()->x,y,w,h.
+    uint32_t w = 320;
+    uint32_t h = 240;
+
+	memcpy(MAIN_FB()->pixels,g_lcd_gram0,320*240*2);//??????
+	
+	 // Set the user image.
+	MAIN_FB()->bpp = 2;
+	image->w = MAIN_FB()->w;
+    image->h = MAIN_FB()->h;
+    image->bpp = MAIN_FB()->bpp;
+    image->pixels = MAIN_FB()->pixels;
 
     return image;
 }
@@ -205,9 +228,23 @@ static mp_obj_t py_sensor_set_framerate(mp_obj_t framerate) {
 }
 
 static mp_obj_t py_sensor_set_framesize(mp_obj_t framesize) {
-    if (sensor_set_framesize(mp_obj_get_int(framesize)) != 0) {
+    /*if (sensor_set_framesize(mp_obj_get_int(framesize)) != 0) {
         return mp_const_false;
-    }
+    }*/
+    // Skip the first frame.
+    MAIN_FB()->bpp = -1;
+
+    // Set MAIN FB x, y offset.
+    MAIN_FB()->x = 0;
+    MAIN_FB()->y = 0;
+
+    // Set MAIN FB width and height.
+    MAIN_FB()->w = 320;
+    MAIN_FB()->h = 240;
+
+    // Set MAIN FB backup width and height.
+    MAIN_FB()->u = 320;
+    MAIN_FB()->v = 240;
     return mp_const_true;
 }
 
@@ -329,8 +366,9 @@ static mp_obj_t py_sensor_set_colorbar(mp_obj_t enable) {
 
 static mp_obj_t py_sensor_set_auto_gain(uint n_args, const mp_obj_t *args, mp_map_t *kw_args) {
     int enable = mp_obj_get_int(args[0]);
-    float gain_db = py_helper_keyword_float(n_args, args, 1, kw_args, MP_OBJ_NEW_QSTR(MP_QSTR_gain_db), NAN);
-    float gain_db_ceiling = py_helper_keyword_float(n_args, args, 2, kw_args, MP_OBJ_NEW_QSTR(MP_QSTR_gain_db_ceiling), NAN);
+    volatile float input_1 = NAN;
+    volatile float gain_db = py_helper_keyword_float(n_args, args, 1, kw_args, MP_OBJ_NEW_QSTR(MP_QSTR_gain_db), input_1);
+    volatile float gain_db_ceiling = py_helper_keyword_float(n_args, args, 2, kw_args, MP_OBJ_NEW_QSTR(MP_QSTR_gain_db_ceiling), input_1);
     if (sensor_set_auto_gain(enable, gain_db, gain_db_ceiling) != 0) {
         nlr_raise(mp_obj_new_exception_msg(&mp_type_ValueError, "Sensor control failed!"));
     }
@@ -338,7 +376,7 @@ static mp_obj_t py_sensor_set_auto_gain(uint n_args, const mp_obj_t *args, mp_ma
 }
 
 static mp_obj_t py_sensor_get_gain_db() {
-    float gain_db;
+    volatile float gain_db;
     if (sensor_get_gain_db(&gain_db) != 0) {
         nlr_raise(mp_obj_new_exception_msg(&mp_type_ValueError, "Sensor control failed!"));
     }
@@ -363,7 +401,7 @@ static mp_obj_t py_sensor_get_exposure_us() {
 
 static mp_obj_t py_sensor_set_auto_whitebal(uint n_args, const mp_obj_t *args, mp_map_t *kw_args) {
     int enable = mp_obj_get_int(args[0]);
-    float rgb_gain_db[3] = {NAN, NAN, NAN};
+    volatile float rgb_gain_db[3] = {NAN, NAN, NAN};
     py_helper_keyword_float_array(n_args, args, 1, kw_args, MP_OBJ_NEW_QSTR(MP_QSTR_rgb_gain_db), rgb_gain_db, 3);
     if (sensor_set_auto_whitebal(enable, rgb_gain_db[0], rgb_gain_db[1], rgb_gain_db[2]) != 0) {
         nlr_raise(mp_obj_new_exception_msg(&mp_type_ValueError, "Sensor control failed!"));

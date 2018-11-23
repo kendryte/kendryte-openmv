@@ -16,11 +16,13 @@
 typedef struct gvec {
     uint16_t t;
     uint16_t g;
-} gvec_t;
+} __attribute__((aligned(8)))gvec_t;
 
 void imlib_edge_simple(image_t *src, rectangle_t *roi, int low_thresh, int high_thresh)
 {
-    imlib_morph(src, 1, kernel_high_pass_3, 1.0f, 0.0f, false, 0, false, NULL);
+    volatile float input_1 = 1.0f;
+    volatile float input_2 = 0.0f;
+    imlib_morph(src, 1, kernel_high_pass_3, input_1, input_2, false, 0, false, NULL);
     list_t thresholds;
     list_init(&thresholds, sizeof(color_thresholds_list_lnk_data_t));
     color_thresholds_list_lnk_data_t lnk_data;

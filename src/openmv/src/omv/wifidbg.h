@@ -6,7 +6,7 @@
 #define __WIFI_DBG_H__
 typedef struct wifidbg_config {
     uint8_t unused;
-} wifidbg_config_t;
+}__attribute__((aligned(8))) wifidbg_config_t;
 int wifidbg_init(wifidbg_config_t *config);
 void wifidbg_dispatch();
 

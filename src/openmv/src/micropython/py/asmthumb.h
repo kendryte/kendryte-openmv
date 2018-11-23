@@ -23,6 +23,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+#if 0
 #ifndef MICROPY_INCLUDED_PY_ASMTHUMB_H
 #define MICROPY_INCLUDED_PY_ASMTHUMB_H
 
@@ -344,3 +345,4 @@ void asm_thumb_bl_ind(asm_thumb_t *as, uint fun_id, uint reg_temp); // convenien
 #endif // GENERIC_ASM_API
 
 #endif // MICROPY_INCLUDED_PY_ASMTHUMB_H
+#endif

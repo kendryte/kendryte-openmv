@@ -10,18 +10,18 @@
 
 void imlib_logpolar_int(image_t *dst, image_t *src, rectangle_t *roi, bool linear, bool reverse)
 {
-    float w_2 = roi->w / 2.0f;
-    float h_2 = roi->h / 2.0f;
-    float rho_scale = alt_fast_log(fast_sqrtf((w_2 * w_2) + (h_2 * h_2)), linear) / roi->h;
-    float rho_scale_inv = 1.0 / rho_scale;
-    float theta_scale = 360.0f / roi->w;
-    float theta_scale_inv = 1.0 / theta_scale;
+    volatile float w_2 = roi->w / 2.0f;
+    volatile float h_2 = roi->h / 2.0f;
+    volatile float rho_scale = alt_fast_log(fast_sqrtf((w_2 * w_2) + (h_2 * h_2)), linear) / roi->h;
+    volatile float rho_scale_inv = 1.0 / rho_scale;
+    volatile float theta_scale = 360.0f / roi->w;
+    volatile float theta_scale_inv = 1.0 / theta_scale;
 
     switch (src->bpp) {
         case IMAGE_BPP_BINARY: {
             for (int y = 0, yy = roi->h; y < yy; y++) {
                 uint32_t *row_ptr = IMAGE_COMPUTE_BINARY_PIXEL_ROW_PTR(dst, y);
-                float rho = y * rho_scale;
+                volatile float rho = y * rho_scale;
                 for (int x = 0, xx = roi->w; x < xx; x++) {
                     int sourceX, sourceY;
 
@@ -31,9 +31,9 @@ void imlib_logpolar_int(image_t *dst, image_t *src, rectangle_t *roi, bool linea
                         sourceX = fast_roundf((alt_fast_exp(rho, linear) * cos_table[theta]) + w_2);
                         sourceY = fast_roundf((alt_fast_exp(rho, linear) * sin_table[theta]) + h_2);
                     } else {
-                        float x_2 = x - w_2;
-                        float y_2 = y - h_2;
-                        float rho = alt_fast_log(fast_sqrtf((x_2 * x_2) + (y_2 * y_2)), linear);
+                        volatile float x_2 = x - w_2;
+                        volatile float y_2 = y - h_2;
+                        volatile float rho = alt_fast_log(fast_sqrtf((x_2 * x_2) + (y_2 * y_2)), linear);
                         int theta = 630 - (x_2 ? fast_roundf(fast_atan2f(y_2, x_2) * (180 / M_PI)) : ((y_2 < 0) ? 270 : 90));
                         if (theta >= 360) theta -= 360;
                         sourceX = fast_roundf(theta * theta_scale_inv);
@@ -52,7 +52,7 @@ void imlib_logpolar_int(image_t *dst, image_t *src, rectangle_t *roi, bool linea
         case IMAGE_BPP_GRAYSCALE: {
             for (int y = 0, yy = roi->h; y < yy; y++) {
                 uint8_t *row_ptr = IMAGE_COMPUTE_GRAYSCALE_PIXEL_ROW_PTR(dst, y);
-                float rho = y * rho_scale;
+                volatile float rho = y * rho_scale;
                 for (int x = 0, xx = roi->w; x < xx; x++) {
                     int sourceX, sourceY;
 
@@ -62,9 +62,9 @@ void imlib_logpolar_int(image_t *dst, image_t *src, rectangle_t *roi, bool linea
                         sourceX = fast_roundf((alt_fast_exp(rho, linear) * cos_table[theta]) + w_2);
                         sourceY = fast_roundf((alt_fast_exp(rho, linear) * sin_table[theta]) + h_2);
                     } else {
-                        float x_2 = x - w_2;
-                        float y_2 = y - h_2;
-                        float rho = alt_fast_log(fast_sqrtf((x_2 * x_2) + (y_2 * y_2)), linear);
+                        volatile float x_2 = x - w_2;
+                        volatile float y_2 = y - h_2;
+                        volatile float rho = alt_fast_log(fast_sqrtf((x_2 * x_2) + (y_2 * y_2)), linear);
                         int theta = 630 - (x_2 ? fast_roundf(fast_atan2f(y_2, x_2) * (180 / M_PI)) : ((y_2 < 0) ? 270 : 90));
                         if (theta >= 360) theta -= 360;
                         sourceX = fast_roundf(theta * theta_scale_inv);
@@ -83,7 +83,7 @@ void imlib_logpolar_int(image_t *dst, image_t *src, rectangle_t *roi, bool linea
         case IMAGE_BPP_RGB565: {
             for (int y = 0, yy = roi->h; y < yy; y++) {
                 uint16_t *row_ptr = IMAGE_COMPUTE_RGB565_PIXEL_ROW_PTR(dst, y);
-                float rho = y * rho_scale;
+                volatile float rho = y * rho_scale;
                 for (int x = 0, xx = roi->w; x < xx; x++) {
                     int sourceX, sourceY;
 
@@ -93,9 +93,9 @@ void imlib_logpolar_int(image_t *dst, image_t *src, rectangle_t *roi, bool linea
                         sourceX = fast_roundf((alt_fast_exp(rho, linear) * cos_table[theta]) + w_2);
                         sourceY = fast_roundf((alt_fast_exp(rho, linear) * sin_table[theta]) + h_2);
                     } else {
-                        float x_2 = x - w_2;
-                        float y_2 = y - h_2;
-                        float rho = alt_fast_log(fast_sqrtf((x_2 * x_2) + (y_2 * y_2)), linear);
+                        volatile float x_2 = x - w_2;
+                        volatile float y_2 = y - h_2;
+                        volatile float rho = alt_fast_log(fast_sqrtf((x_2 * x_2) + (y_2 * y_2)), linear);
                         int theta = 630 - (x_2 ? fast_roundf(fast_atan2f(y_2, x_2) * (180 / M_PI)) : ((y_2 < 0) ? 270 : 90));
                         if (theta >= 360) theta -= 360;
                         sourceX = IM_MIN(IM_MAX(fast_roundf(theta * theta_scale_inv), 0), (roi->w-1));

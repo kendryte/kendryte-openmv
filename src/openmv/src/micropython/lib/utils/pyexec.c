@@ -94,7 +94,6 @@ STATIC int parse_compile_execute(const void *source, mp_parse_input_kind_t input
             mp_raise_msg(&mp_type_RuntimeError, "script compilation not supported");
             #endif
         }
-
         // execute code
         mp_hal_set_interrupt_char(CHAR_CTRL_C); // allow ctrl-C to interrupt us
         start = mp_hal_ticks_ms();

@@ -836,8 +836,35 @@ void clear_lock (   /* Clear lock entries of the volume */
 
 #endif  /* _FS_LOCK != 0 */
 
+/*gcc complier*/
+DRESULT disk_read (
+    void *drv,      /* Physical drive nmuber (0..) */
+    BYTE *buff,        /* Data buffer to store read data */
+    DWORD sector,    /* Sector address (LBA) */
+    UINT count        /* Number of sectors to read (1..128) */
+)
+{
+    return RES_OK;
+}
 
+/*-----------------------------------------------------------------------*/
+/* Write Sector(s)                                                       */
+/*-----------------------------------------------------------------------*/
 
+DRESULT disk_write (
+    void *drv,          /* Physical drive nmuber (0..) */
+    const BYTE *buff,    /* Data to be written */
+    DWORD sector,        /* Sector address (LBA) */
+    UINT count            /* Number of sectors to write (1..128) */
+)
+{
+    return RES_OK;
+}
+
+DWORD get_fattime (void)
+{
+    return 0;
+}
 /*-----------------------------------------------------------------------*/
 /* Move/Flush disk access window in the file system object               */
 /*-----------------------------------------------------------------------*/
@@ -3563,7 +3590,7 @@ FRESULT f_sync (
 )
 {
     FRESULT res;
-    FATFS *fs;
+    FATFS *fs=NULL;
     DWORD tm;
     BYTE *dir;
 #if _FS_EXFAT
@@ -3809,7 +3836,7 @@ FRESULT f_lseek (
 )
 {
     FRESULT res;
-    FATFS *fs;
+    FATFS *fs=NULL;
     DWORD clst, bcs, nsect;
     FSIZE_t ifptr;
 #if _USE_FASTSEEK
@@ -5092,9 +5119,9 @@ FRESULT f_mkfs (
     static const WORD cst32[] = {1, 2, 4, 8, 16, 32, 0};    /* Cluster size boundary for FAT32 volume (128Ks unit) */
     BYTE fmt, sys, *buf, *pte, part; void *pdrv;
     WORD ss;
-    DWORD szb_buf, sz_buf, sz_blk, n_clst, pau, sect, nsect, n;
+    DWORD szb_buf, sz_buf, sz_blk=0, n_clst, pau, sect, nsect, n;
     DWORD b_vol, b_fat, b_data;             /* Base LBA for volume, fat, data */
-    DWORD sz_vol, sz_rsv, sz_fat, sz_dir;   /* Size for volume, fat, dir, data */
+    DWORD sz_vol=0, sz_rsv, sz_fat, sz_dir;   /* Size for volume, fat, dir, data */
     UINT i;
     DSTATUS stat;
 #if _USE_TRIM || _FS_EXFAT
