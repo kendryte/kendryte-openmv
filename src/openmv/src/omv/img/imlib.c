@@ -664,9 +664,10 @@ void imlib_save_image(image_t *img, const char *path, rectangle_t *roi, int qual
 
 // A simple algorithm for correcting lens distortion.
 // See http://www.tannerhelland.com/4743/simple-algorithm-correcting-lens-distortion/
-void imlib_lens_corr(image_t *img, float strength, float zoom)
+void imlib_lens_corr(image_t *img, float strength, float zoom_in)
 {
-    zoom = 1 / zoom;
+    volatile float zoom;
+    zoom = 1 / zoom_in;
     int halfWidth = img->w / 2;
     int halfHeight = img->h / 2;
     volatile float lens_corr_radius = strength / fast_sqrtf((img->w * img->w) + (img->h * img->h));
