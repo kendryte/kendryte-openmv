@@ -40,7 +40,7 @@
 #include "fb_alloc.h"
 #include <malloc.h>
 #define UART_BUF_LENGTH_MAX 269
-#define MPY_HEAP_SIZE 1 * 1024 * 1024
+#define MPY_HEAP_SIZE (1 * 1024 * 1024)
 extern int mp_hal_stdin_rx_chr(void);
 
 

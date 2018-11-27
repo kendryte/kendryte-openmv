@@ -40,7 +40,6 @@
 #define DEBUG_PRINT (0)
 #define DEBUG_printf(...) (void)0
 #endif
-
 // make this 1 to dump the heap each time it changes
 #define EXTENSIVE_HEAP_PROFILING (0)
 
@@ -109,7 +108,7 @@ void gc_init(void *start, void *end) {
     // align end pointer on block boundary
     end = (void*)((uintptr_t)end & (~(BYTES_PER_BLOCK - 1)));
     DEBUG_printf("Initializing GC heap: %p..%p = " UINT_FMT " bytes\n", start, end, (byte*)end - (byte*)start);
-
+	
     // calculate parameters for GC (T=total, A=alloc table, F=finaliser table, P=pool; all in bytes):
     // T = A + F + P
     //     F = A * BLOCKS_PER_ATB / BLOCKS_PER_FTB
@@ -293,7 +292,7 @@ STATIC void gc_sweep(void) {
                 }
 #endif
                 free_tail = 1;
-                DEBUG_printf("gc_sweep(%p)\n", PTR_FROM_BLOCK(block));
+                DEBUG_printf("gc_sweep(0x%08x)\n", (int)PTR_FROM_BLOCK(block));
                 #if MICROPY_PY_GC_COLLECT_RETVAL
                 MP_STATE_MEM(gc_collected)++;
                 #endif
@@ -328,10 +327,12 @@ void gc_collect_start(void) {
     // correctly in the mp_state_ctx structure.  We scan nlr_top, dict_locals,
     // dict_globals, then the root pointer section of mp_state_vm.
     void **ptrs = (void**)(void*)&mp_state_ctx;
+#if 0
     size_t root_start = offsetof(mp_state_ctx_t, thread.dict_locals);
     size_t root_end = offsetof(mp_state_ctx_t, vm.qstr_last_chunk);
     gc_collect_root(ptrs + root_start / sizeof(void*), (root_end - root_start) / sizeof(void*));
-
+#endif
+	gc_collect_root(ptrs, offsetof(mp_state_ctx_t, vm.qstr_last_chunk) / sizeof(void*));
     #if MICROPY_ENABLE_PYSTACK
     // Trace root pointers from the Python stack.
     ptrs = (void**)(void*)MP_STATE_THREAD(pystack_start);
@@ -361,14 +362,14 @@ void gc_collect_end(void) {
     MP_STATE_MEM(gc_lock_depth)--;
     GC_EXIT();
 }
-
+#if 0
 void gc_sweep_all(void) {
     GC_ENTER();
     MP_STATE_MEM(gc_lock_depth)++;
     MP_STATE_MEM(gc_stack_overflow) = 0;
     gc_collect_end();
 }
-
+#endif
 void gc_info(gc_info_t *info) {
     GC_ENTER();
     info->total = MP_STATE_MEM(gc_pool_end) - MP_STATE_MEM(gc_pool_start);
@@ -453,14 +454,14 @@ void *gc_alloc(size_t n_bytes, bool has_finaliser) {
     size_t i;
     size_t end_block;
     size_t start_block;
-    size_t n_free;
+    size_t n_free = 0;
     int collected = !MP_STATE_MEM(gc_auto_collect_enabled);
 
     #if MICROPY_GC_ALLOC_THRESHOLD
     if (!collected && MP_STATE_MEM(gc_alloc_amount) >= MP_STATE_MEM(gc_alloc_threshold)) {
         GC_EXIT();
         gc_collect();
-        collected = 1;
+        //collected = 1;
         GC_ENTER();
     }
     #endif
@@ -468,7 +469,7 @@ void *gc_alloc(size_t n_bytes, bool has_finaliser) {
     for (;;) {
 
         // look for a run of n_blocks available blocks
-        n_free = 0;
+        //n_free = 0;
         for (i = MP_STATE_MEM(gc_last_free_atb_index); i < MP_STATE_MEM(gc_alloc_table_byte_len); i++) {
             byte a = MP_STATE_MEM(gc_alloc_table_start)[i];
             if (ATB_0_IS_FREE(a)) { if (++n_free >= n_blocks) { i = i * BLOCKS_PER_ATB + 0; goto found; } } else { n_free = 0; }
@@ -551,7 +552,6 @@ found:
     #if EXTENSIVE_HEAP_PROFILING
     gc_dump_alloc_table();
     #endif
-
     return ret_ptr;
 }
 

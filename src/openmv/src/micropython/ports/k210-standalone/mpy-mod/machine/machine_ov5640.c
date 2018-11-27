@@ -233,7 +233,7 @@ STATIC mp_obj_t machine_ov5640_init_helper(machine_ov5640_obj_t *self) {
     dvp_set_image_size(320, 240);
     ov5640_init();
 
-    dvp_set_ai_addr((uint32_t)0x40600000, (uint32_t)0x40612C00, (uint32_t)0x40625800);
+    //dvp_set_ai_addr((uint32_t)0x40600000, (uint32_t)0x40612C00, (uint32_t)0x40625800);
     dvp_set_display_addr((uint32_t)g_lcd_gram0);
     dvp_config_interrupt(DVP_CFG_START_INT_ENABLE | DVP_CFG_FINISH_INT_ENABLE, 0);
     dvp_disable_auto();

@@ -752,8 +752,9 @@ static mp_obj_t py_image_midpoint_pool(uint n_args, const mp_obj_t *args, mp_map
     PY_ASSERT_TRUE_MSG(y_div <= arg_img->h, "Height divisor must be less than <= img height");
 
     volatile float input_1=0.5f;
+	volatile float input_2=0.0f;
     int bias = IM_MAX(IM_MIN(py_helper_keyword_float(n_args, args, 3, kw_args,
-                                                     MP_OBJ_NEW_QSTR(MP_QSTR_bias), input_1) * 256, 256), 0);
+                                                     MP_OBJ_NEW_QSTR(MP_QSTR_bias), input_1) * 256, 256), input_2);
 
     image_t out_img;
     out_img.w = arg_img->w / x_div;
@@ -786,8 +787,9 @@ static mp_obj_t py_image_midpoint_pooled(uint n_args, const mp_obj_t *args, mp_m
     PY_ASSERT_TRUE_MSG(y_div <= arg_img->h, "Height divisor must be less than <= img height");
 
     volatile float input_1=0.5f;
+	volatile float input_2=0.0f;
     int bias = IM_MAX(IM_MIN(py_helper_keyword_float(n_args, args, 3, kw_args,
-                                                     MP_OBJ_NEW_QSTR(MP_QSTR_bias), input_1) * 256, 256), 0);
+                                                     MP_OBJ_NEW_QSTR(MP_QSTR_bias), input_1) * 256, 256), input_2);
 
     image_t out_img;
     out_img.w = arg_img->w / x_div;

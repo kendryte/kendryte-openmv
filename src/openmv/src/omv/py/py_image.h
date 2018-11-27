@@ -12,7 +12,7 @@
 #include "imlib.h"
 
 /*deepvision*/
-#define FRAMEBUFFER_SIZE	2*1024*1024/4	//1MB
+#define FRAMEBUFFER_SIZE	((2*1024*1024)/4) //1MB
 
 extern uint32_t g_lcd_gram0[38400] __attribute__((aligned(8)));
 extern uint32_t g_lcd_gram1[38400] __attribute__((aligned(8)));
