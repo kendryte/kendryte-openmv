@@ -5348,13 +5348,15 @@ static mp_obj_t py_image_show(mp_obj_t self_in)
 			//uint16_t pix_val;
     		for (int y = 0, yy = 240; y < yy; y++) {
     			uint16_t *row_ptr = ((uint16_t *)g_framebuffer) + (y * 320);
-        		uint16_t *out_row_ptr = ((uint16_t *)g_display_buff) + (y * 320);
+        		//uint16_t *out_row_ptr = ((uint16_t *)g_display_buff) + (y * 320);
+				uint16_t *out_row_ptr = ((uint16_t *)g_display_buff) + ((239 - y) * 320);
         		for (int x = 0, xx = 320; x < xx; x++) {
 					uint16_t pix_val;
      				pix_val = row_ptr[x];
 					uint8_t tmp = pix_val >> 8;
 		    		pix_val = tmp | (pix_val << 8);
-					out_row_ptr[x] = pix_val;
+					//out_row_ptr[x] = pix_val;
+					out_row_ptr[319 - x] = pix_val;
         		}
     		}
 			lcd_draw_picture(0, 0, 320, 240, g_display_buff);
@@ -5363,10 +5365,12 @@ static mp_obj_t py_image_show(mp_obj_t self_in)
 			//printf("show gray image.\n");
 			for (int y = 0, yy = 240; y < yy; y++) {
     			uint8_t *row_ptr = ((uint8_t *)g_framebuffer) + (y * 320);
-        		uint16_t *out_row_ptr = ((uint16_t *)g_display_buff) + (y * 320);
+        		//uint16_t *out_row_ptr = ((uint16_t *)g_display_buff) + (y * 320);
+				uint16_t *out_row_ptr = ((uint16_t *)g_display_buff) + ((239 - y) * 320);
         		for (int x = 0, xx = 320; x < xx; x++) {
      				uint8_t grey = row_ptr[x];
-					out_row_ptr[x] = ((grey >> 3)|((grey & ~3) << 3)|((grey & ~7) << 8));
+					//out_row_ptr[x] = ((grey >> 3)|((grey & ~3) << 3)|((grey & ~7) << 8));
+					out_row_ptr[319 - x] = ((grey >> 3)|((grey & ~3) << 3)|((grey & ~7) << 8));
         		}
     		}
 			lcd_draw_picture(0, 0, 320, 240, g_display_buff);
@@ -5691,12 +5695,14 @@ static mp_obj_t py_sensor_snapshot(uint n_args, const mp_obj_t *args, mp_map_t *
 	memcpy(g_display_buff,g_ram_mux ? g_lcd_gram0 : g_lcd_gram1,320*240*2);//采集一帧图�?
     for (int y = 0, yy = 240; y < yy; y++) {
     	uint16_t *row_ptr = ((uint16_t *)g_display_buff)+ (y * 320);
-        uint16_t *out_row_ptr = ((uint16_t *)g_framebuffer)+ (y * 320);
+        //uint16_t *out_row_ptr = ((uint16_t *)g_framebuffer)+ (y * 320);
+		uint16_t *out_row_ptr = ((uint16_t *)g_framebuffer)+ ((239 - y) * 320);
         for (int x = 0, xx = 320; x < xx; x++) {
      		pix_val = row_ptr[x];
 			uint8_t tmp = pix_val >> 8;
 		    pix_val = tmp | (pix_val << 8);
-			out_row_ptr[x] = pix_val;
+			//out_row_ptr[x] = pix_val;
+			out_row_ptr[319 - x] = pix_val;
         }
     }
 	

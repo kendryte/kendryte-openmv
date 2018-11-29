@@ -6,9 +6,9 @@
 #include <float.h>
 #include "imlib.h"
 #ifdef IMLIB_ENABLE_DATAMATRICES
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-variable"
-#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
+//#pragma GCC diagnostic push
+//#pragma GCC diagnostic ignored "-Wunused-variable"
+//#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2558,7 +2558,9 @@ dmtxRegionUpdateCorners(DmtxDecode *dec, DmtxRegion *reg, DmtxVector2 p00,
 {
    double xMax, yMax;
    double tx, ty, phi, shx, scx, scy, skx, sky;
-   double dimOT, dimOR, dimTX, dimRX, ratio;
+   //double dimOT, dimOR, dimTX, dimRX, ratio;
+   volatile double dimOT, dimOR, dimTX, dimRX;
+   double ratio;
    DmtxVector2 vOT, vOR, vTX, vRX, vTmp;
    DmtxMatrix3 m, mtxy, mphi, mshx, mscx, mscy, mscxy, msky, mskx;
 
@@ -6386,5 +6388,5 @@ void imlib_find_datamatrices(list_t *out, image_t *ptr, rectangle_t *roi, int ef
     if (ptr->bpp != IMAGE_BPP_GRAYSCALE) fb_free(); // grayscale_image;
 }
 
-#pragma GCC diagnostic pop
+//#pragma GCC diagnostic pop
 #endif //IMLIB_ENABLE_DATAMATRICES
