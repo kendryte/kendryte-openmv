@@ -5335,6 +5335,14 @@ static mp_obj_t py_image_selective_search(uint n_args, const mp_obj_t *args, mp_
 STATIC MP_DEFINE_CONST_FUN_OBJ_KW(py_image_selective_search_obj, 1, py_image_selective_search);
 #endif // IMLIB_ENABLE_SELECTIVE_SEARCH
 
+#define _CANNAN_LCD_DRAW_STRING_
+
+#ifdef _CANNAN_LCD_DRAW_STRING_
+extern char g_cannan_draw_string_buff[256];
+extern int  g_cannan_draw_string_x_off;
+extern int  g_cannan_draw_string_y_off;
+#endif
+
 /*deepvision*/
 static mp_obj_t py_image_show(mp_obj_t self_in)
 {
@@ -5348,8 +5356,8 @@ static mp_obj_t py_image_show(mp_obj_t self_in)
 			//uint16_t pix_val;
     		for (int y = 0, yy = 240; y < yy; y++) {
     			uint16_t *row_ptr = ((uint16_t *)g_framebuffer) + (y * 320);
-        		//uint16_t *out_row_ptr = ((uint16_t *)g_display_buff) + (y * 320);
-				uint16_t *out_row_ptr = ((uint16_t *)g_display_buff) + ((239 - y) * 320);
+        		uint16_t *out_row_ptr = ((uint16_t *)g_display_buff) + (y * 320);
+				//uint16_t *out_row_ptr = ((uint16_t *)g_display_buff) + ((239 - y) * 320);
         		for (int x = 0, xx = 320; x < xx; x++) {
 					uint16_t pix_val;
      				pix_val = row_ptr[x];
@@ -5360,13 +5368,17 @@ static mp_obj_t py_image_show(mp_obj_t self_in)
         		}
     		}
 			lcd_draw_picture(0, 0, 320, 240, g_display_buff);
+            #ifdef _CANNAN_LCD_DRAW_STRING_
+            lcd_draw_string(g_cannan_draw_string_x_off, g_cannan_draw_string_y_off,g_cannan_draw_string_buff,0x1F);
+            memset(g_cannan_draw_string_buff,0,255);
+            #endif
 			break;
 		case 1://gray_scale
 			//printf("show gray image.\n");
 			for (int y = 0, yy = 240; y < yy; y++) {
     			uint8_t *row_ptr = ((uint8_t *)g_framebuffer) + (y * 320);
-        		//uint16_t *out_row_ptr = ((uint16_t *)g_display_buff) + (y * 320);
-				uint16_t *out_row_ptr = ((uint16_t *)g_display_buff) + ((239 - y) * 320);
+        		uint16_t *out_row_ptr = ((uint16_t *)g_display_buff) + (y * 320);
+				//uint16_t *out_row_ptr = ((uint16_t *)g_display_buff) + ((239 - y) * 320);
         		for (int x = 0, xx = 320; x < xx; x++) {
      				uint8_t grey = row_ptr[x];
 					//out_row_ptr[x] = ((grey >> 3)|((grey & ~3) << 3)|((grey & ~7) << 8));
@@ -5374,6 +5386,10 @@ static mp_obj_t py_image_show(mp_obj_t self_in)
         		}
     		}
 			lcd_draw_picture(0, 0, 320, 240, g_display_buff);
+            #ifdef _CANNAN_LCD_DRAW_STRING_
+            lcd_draw_string(g_cannan_draw_string_x_off, g_cannan_draw_string_y_off,g_cannan_draw_string_buff,0x1F);
+            memset(g_cannan_draw_string_buff,0,255);
+            #endif
 			break;
 		case 0://binary
 			//printf("show binary image.\n");
@@ -5695,8 +5711,8 @@ static mp_obj_t py_sensor_snapshot(uint n_args, const mp_obj_t *args, mp_map_t *
 	memcpy(g_display_buff,g_ram_mux ? g_lcd_gram0 : g_lcd_gram1,320*240*2);//采集一帧图�?
     for (int y = 0, yy = 240; y < yy; y++) {
     	uint16_t *row_ptr = ((uint16_t *)g_display_buff)+ (y * 320);
-        //uint16_t *out_row_ptr = ((uint16_t *)g_framebuffer)+ (y * 320);
-		uint16_t *out_row_ptr = ((uint16_t *)g_framebuffer)+ ((239 - y) * 320);
+        uint16_t *out_row_ptr = ((uint16_t *)g_framebuffer)+ (y * 320);
+		//uint16_t *out_row_ptr = ((uint16_t *)g_framebuffer)+ ((239 - y) * 320);
         for (int x = 0, xx = 320; x < xx; x++) {
      		pix_val = row_ptr[x];
 			uint8_t tmp = pix_val >> 8;

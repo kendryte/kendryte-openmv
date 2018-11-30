@@ -88,7 +88,8 @@ STATIC mp_obj_t machine_init_helper(machine_nt35310_obj_t *self) {
     
     printf("LCD init\n");
     lcd_init();
-    lcd_set_direction(DIR_YX_LRUD);
+    //lcd_set_direction(DIR_YX_LRUD);
+    lcd_set_direction(DIR_YX_RLUD);
     lcd_clear(BLACK);
     lcd_init_flag = 1;
     return mp_const_none;

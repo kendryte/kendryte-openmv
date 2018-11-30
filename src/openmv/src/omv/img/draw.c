@@ -6,6 +6,8 @@
 #include "font.h"
 #include "imlib.h"
 
+#define _CANNAN_LCD_DRAW_STRING_
+
 // Get pixel (handles boundary check and image type check).
 int imlib_get_pixel(image_t *img, int x, int y)
 {
@@ -170,6 +172,104 @@ void imlib_draw_circle(image_t *img, int cx, int cy, int r, int c, int thickness
     }
 }
 
+#ifdef _CANNAN_LCD_DRAW_STRING_
+#if 0
+image_t g_cannan_draw_string_img;
+uint8_t g_cannan_draw_string_buff[38400*4] __attribute__((aligned(8)));
+extern uint8_t const ascii0816[];
+void omv_lcd_draw_char(image_t *img,int x, int y, char c, int color)
+{
+    uint8_t i = 0;
+    uint8_t j = 0;
+    uint8_t data = 0;
+    int x_act;
+
+    for (i = 0; i < 16; i++)
+    {
+        data = ascii0816[c * 16 + i];
+        for (j = 0; j < 8; j++)
+        {
+        
+            if (data & 0x80)
+            {
+                /*swap short*/
+                if(x+j % 2==0)
+                {
+                    x_act = x+j + 1;
+                }
+                else
+                {
+                    x_act = x+j - 1;
+                }
+                imlib_set_pixel(img, x_act, y, color);
+            }
+            data <<= 1;
+        }
+        y++;
+    }
+}
+
+void omv_lcd_draw_string(image_t *img, int x, int y, char *str, uint16_t color)
+{
+    while (*str)
+    {
+        omv_lcd_draw_char(img, x, y, *str, color);
+        str++;
+        x += 8;
+    }
+}
+
+void imlib_draw_string(image_t *img, int x_off, int y_off, const char *str, int c, int scale, int x_spacing, int y_spacing, bool mono_space)
+{
+    uint16_t *p_draw_raw;
+    uint16_t *p_draw_out;
+    int h,w;
+    
+    g_cannan_draw_string_img.bpp = img->bpp;
+    g_cannan_draw_string_img.h = img->h;
+    g_cannan_draw_string_img.w = img->w;
+    g_cannan_draw_string_img.data = g_cannan_draw_string_buff;
+    
+    memset(g_cannan_draw_string_buff,0,38400*4);
+    
+    if(g_cannan_draw_string_img.bpp != IMAGE_BPP_RGB565)
+        return;
+    if(g_cannan_draw_string_img.h * g_cannan_draw_string_img.w > 240*320)
+        return;
+
+    omv_lcd_draw_string(&g_cannan_draw_string_img,x_off,y_off,str,0x001f);
+    
+    p_draw_raw = (uint16_t *)g_cannan_draw_string_buff;
+    p_draw_out = (uint16_t *)img->data;
+
+    for(h = 0; h < img->h ; h++)
+    {
+        for(w = 0; w < img->w; w++)
+        {
+            if(p_draw_raw[img->w*h + w] != 0)
+            {
+                //p_draw_out[img->w*h + (img->w - 1 - w )] = p_draw_raw[img->w*h + w];
+                p_draw_out[img->w*h + w] = p_draw_raw[img->w*h + w];
+            }
+        }
+    }
+}
+#endif
+
+char g_cannan_draw_string_buff[256];
+int  g_cannan_draw_string_x_off;
+int  g_cannan_draw_string_y_off;
+void imlib_draw_string(image_t *img, int x_off, int y_off, const char *str, int c, int scale, int x_spacing, int y_spacing, bool mono_space)
+{
+    memset(g_cannan_draw_string_buff,0,256);
+    if(strlen(str) > 255)
+        return;
+    strcpy(g_cannan_draw_string_buff,str);
+    g_cannan_draw_string_x_off = x_off;
+    g_cannan_draw_string_y_off = y_off;
+}
+
+#else
 void imlib_draw_string(image_t *img, int x_off, int y_off, const char *str, int c, int scale, int x_spacing, int y_spacing, bool mono_space)
 {
     const int anchor = x_off;
@@ -245,7 +345,7 @@ void imlib_draw_string(image_t *img, int x_off, int y_off, const char *str, int 
         }
     }
 }
-
+#endif
 void imlib_draw_image(image_t *img, image_t *other, int x_off, int y_off, float x_scale, float y_scale, image_t *mask)
 {
     float over_xscale = IM_DIV(1.0, x_scale), over_yscale = IM_DIV(1.0f, y_scale);
