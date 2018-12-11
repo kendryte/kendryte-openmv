@@ -19,6 +19,7 @@
 #include "sysctl.h"
 #include "string.h"
 #include "encoding.h"
+#include "bsp.h"
 
 #define SYSCTRL_CLOCK_FREQ_IN0 (26000000UL)
 
@@ -752,31 +753,23 @@ static int sysctl_pll_is_lock(sysctl_pll_t pll)
      *
      */
 
-    uint8_t lock = 0;
-
     if (pll >= SYSCTL_PLL_MAX)
         return 0;
 
     switch (pll)
     {
         case SYSCTL_PLL0:
-            lock = sysctl->pll_lock.pll_lock0;
-            break;
+            return sysctl->pll_lock.pll_lock0 == 3;
 
         case SYSCTL_PLL1:
-            lock = sysctl->pll_lock.pll_lock1;
-            break;
+            return sysctl->pll_lock.pll_lock1 & 1;
 
         case SYSCTL_PLL2:
-            lock = sysctl->pll_lock.pll_lock2;
-            break;
+            return sysctl->pll_lock.pll_lock2 & 1;
 
         default:
             break;
     }
-
-    if (lock == 3)
-        return 1;
 
     return 0;
 }
@@ -1778,13 +1771,14 @@ uint32_t sysctl_pll_set_freq(sysctl_pll_t pll, uint32_t pll_freq)
 
     /* 5. Power on PLL */
     v_pll_t->pll_pwrd = 1;
+    /* wait >100ns */
+    usleep(1);
 
     /* 6. Reset PLL then Release Reset*/
     v_pll_t->pll_reset = 0;
     v_pll_t->pll_reset = 1;
-    /* wait 100ns */
-    asm volatile ("nop");
-    asm volatile ("nop");
+    /* wait >100ns */
+    usleep(1);
     v_pll_t->pll_reset = 0;
 
     /* 7. Get lock status, wait PLL stable */
@@ -1819,5 +1813,11 @@ void sysctl_disable_irq(void)
 {
     clear_csr(mie, MIP_MEIP);
     clear_csr(mstatus, MSTATUS_MIE);
+}
+
+uint64_t sysctl_get_time_us(void)
+{
+    uint64_t v_cycle = read_cycle();
+    return v_cycle * 1000000 / sysctl_clock_get_freq(SYSCTL_CLOCK_CPU);
 }
 

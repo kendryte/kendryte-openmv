@@ -7,7 +7,7 @@
 #include "extmod/misc.h"
 #include "lib/utils/pyexec.h"
 
-#include "uart.h"
+
 #include "uarths.h"
 
 /*

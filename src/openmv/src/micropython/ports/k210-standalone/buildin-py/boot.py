@@ -41,24 +41,24 @@ tripleled.green()
 #	nop = img.show()
 
 #example2: find circles
-#roi=(80,60,160,120) #roi为中心区域160X120范围
+#roi=(80,60,160,120) #roi?????160X120??
 #while(True):
 #	img = sensor.snapshot()
 #	for c in img.find_circles(roi):
 #		img.draw_circle(c.x(),c.y(),c.r(),color=(255,0,0))
 #		print(c)
-#	dr = img.draw_rectangle(roi) #画出ROI
+#	dr = img.draw_rectangle(roi) #??ROI
 #	nop = img.show()
 
 #examle3: find rects
-#roi=(80,60,160,120) #roi为中心区域160X120范围
+#roi=(80,60,160,120) #roi?????160X120??
 #while(True):
 #	img = sensor.snapshot()
-#	for r in img.find_rects(threshold = 10000 , roi=roi):
+#	for r in img.find_rects(threshold = 18000 , roi=roi):
 #		img.draw_rectangle(r.rect(), color = (255, 0, 0))
 #		for p in r.corners(): img.draw_circle(p[0], p[1], 5, color = (0, 255, 0))
 #		print(r)
-#	dr = img.draw_rectangle(roi) #画出ROI
+#	dr = img.draw_rectangle(roi) #??ROI
 #	nop = img.show()
 
 #examle4: face detect
@@ -71,6 +71,7 @@ while (True):
 		img.draw_rectangle(r,color=(0,255,255))
 		print(r)
 	nop = img.show()
+
 #examle5: data matrix
 #while(True):
 #    img = sensor.snapshot()

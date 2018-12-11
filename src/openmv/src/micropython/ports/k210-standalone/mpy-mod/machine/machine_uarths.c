@@ -33,7 +33,7 @@
 #include "py/mperrno.h"
 #include "modmachine.h"
 
-#include "uart.h"
+
 #include "uarths.h"
 
 typedef struct _machine_uarths_obj_t {

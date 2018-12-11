@@ -18,6 +18,7 @@
 #include "utils.h"
 #include "fpioa.h"
 #include "sysctl.h"
+#include <math.h>
 
 volatile dvp_t* const dvp = (volatile dvp_t*)DVP_BASE_ADDR;
 static uint8_t g_sccb_reg_len = 8;
@@ -41,6 +42,21 @@ static void dvp_sccb_clk_init(void)
     tmp |= DVP_SCCB_SCL_LCNT(500) | DVP_SCCB_SCL_HCNT(500);
 
     dvp->sccb_cfg = tmp;
+}
+
+uint32_t dvp_sccb_set_clk_rate(uint32_t clk_rate)
+{
+    uint32_t tmp;
+    uint32_t v_sccb_freq = sysctl_clock_get_freq(SYSCTL_CLOCK_APB1);
+    uint16_t v_period_clk_cnt = round(v_sccb_freq / clk_rate / 2.0);
+    if(v_period_clk_cnt > 255)
+    {
+        return 0;
+    }
+    tmp = dvp->sccb_cfg & (~(DVP_SCCB_SCL_LCNT_MASK | DVP_SCCB_SCL_HCNT_MASK));
+    tmp |= DVP_SCCB_SCL_LCNT(v_period_clk_cnt) | DVP_SCCB_SCL_HCNT(v_period_clk_cnt);
+    dvp->sccb_cfg = tmp;
+    return sysctl_clock_get_freq(SYSCTL_CLOCK_DVP) / (v_period_clk_cnt * 2);
 }
 
 static void dvp_sccb_start_transfer(void)
@@ -103,7 +119,7 @@ uint8_t dvp_sccb_receive_data(uint8_t dev_addr, uint16_t reg_addr)
     return (uint8_t) DVP_SCCB_RDATA_BYTE(dvp->sccb_cfg);
 }
 
-void dvp_reset(void)
+static void dvp_reset(void)
 {
     /* First power down */
     dvp->cmos_cfg |= DVP_CMOS_POWER_DOWN;

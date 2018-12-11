@@ -19,11 +19,19 @@ add_compile_flags(BOTH
         -fdata-sections
         -fstrict-volatile-bitfields
         -fno-zero-initialized-in-bss
-        -Os
+	-Os
+	-ffloat-store
         -ggdb
-        )
+	)
 
-add_compile_flags(C -std=gnu11)
+#hukai
+#add_compile_flags(C
+#	-fstack-protector
+#	-fstack-protector-all
+#	-fstack-usage
+#	)
+
+add_compile_flags(C -std=gnu11 -Wno-pointer-to-int-cast)
 add_compile_flags(CXX -std=gnu++17)
 
 if (BUILDING_SDK)
@@ -42,9 +50,9 @@ if (BUILDING_SDK)
 			-Wno-error=return-type
 			-Wno-error=pointer-sign
 			-Wno-missing-braces
-			-Wno-pointer-to-int-cast
 			-Wno-strict-aliasing
 			-Wno-implicit-fallthrough
+			-Wno-missing-field-initializers
             )
 
     add_compile_flags(C -Wno-old-style-declaration)

@@ -233,7 +233,7 @@ int ov2640_init(void)
 	dvp_init(8);
 	dvp_io_init();
 	dvp->cmos_cfg |= DVP_CMOS_CLK_DIV(1) | DVP_CMOS_CLK_ENABLE;
-    dvp_reset();
+    //dvp_reset();
 	dvp_enable_burst();
 	dvp->dvp_cfg |= (DVP_CFG_AI_OUTPUT_ENABLE | DVP_CFG_DISPLAY_OUTPUT_ENABLE);
 	printf("Enter the ov2640_init\n");

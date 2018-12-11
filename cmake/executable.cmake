@@ -1,28 +1,33 @@
 if (NOT BUILDING_SDK)
     add_library(kendryte STATIC IMPORTED)
-    set_property(TARGET kendryte PROPERTY IMPORTED_LOCATION ${SDK_ROOT}/libmaix.a)
+    set_property(TARGET kendryte PROPERTY IMPORTED_LOCATION ${SDK_ROOT}/libkendryte.a)
     include_directories(${SDK_ROOT}/include/)
 endif ()
 
+removeDuplicateSubstring(${CMAKE_C_FLAGS} CMAKE_C_FLAGS)
+removeDuplicateSubstring(${CMAKE_CXX_FLAGS} CMAKE_CXX_FLAGS)
+
+message("SOURCE_FILES=${SOURCE_FILES}")
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
-# add_dependencies(${PROJECT_NAME} kendryte) # TODO: third_party
-# target_link_libraries(${PROJECT_NAME} kendryte) # TODO: third_party
-# link_directories(${CMAKE_BINARY_DIR})
+
 target_link_libraries(${PROJECT_NAME}
         ${SDK_ROOT}/src/openmv/src/micropython/ports/k210-standalone/micropython.a
         )
+
 set_target_properties(${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE C)
 
 target_link_libraries(${PROJECT_NAME}
         -Wl,--start-group
-        gcc m c kendryte
+        gcc m c
+        -Wl,--whole-archive
+        kendryte
+        -Wl,--no-whole-archive
         -Wl,--end-group
         )
+
 IF(SUFFIX)
     SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES SUFFIX ${SUFFIX})
 ENDIF()
-
-#message("CMAKE_OBJCOPY=${CMAKE_OBJCOPY}")
 
 # Build target
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
@@ -30,8 +35,6 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         DEPENDS ${PROJECT_NAME}
         COMMENT "Generating .bin file ...")
 
-
 add_custom_target(firmware DEPENDS ${PROJECT_NAME}.firmware.bin)
-
 # show information
 include(${CMAKE_CURRENT_LIST_DIR}/dump-config.cmake)

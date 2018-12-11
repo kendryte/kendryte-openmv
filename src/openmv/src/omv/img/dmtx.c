@@ -6,9 +6,7 @@
 #include <float.h>
 #include "imlib.h"
 #ifdef IMLIB_ENABLE_DATAMATRICES
-//#pragma GCC diagnostic push
-//#pragma GCC diagnostic ignored "-Wunused-variable"
-//#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -821,7 +819,6 @@ static int rHvY[] =
 #ifndef CALLBACK_FINAL
 #define CALLBACK_FINAL(a,b)
 #endif
-
 extern char *
 dmtxVersion(void)
 {
@@ -1324,8 +1321,7 @@ dmtxDecodeCreateDiagnostic(DmtxDecode *dec, int *totalBytes, int *headerBytes, i
    height = dmtxDecodeGetProp(dec, DmtxPropHeight);
    channelCount = dmtxImageGetProp(dec->image, DmtxPropChannelCount);
 
-   //style = 1; /* this doesn't mean anything yet , deleted for compile*/
-
+   
    /* Count width digits */
    for(widthDigits = 0, i = width; i > 0; i /= 10)
       widthDigits++;
@@ -2558,9 +2554,7 @@ dmtxRegionUpdateCorners(DmtxDecode *dec, DmtxRegion *reg, DmtxVector2 p00,
 {
    double xMax, yMax;
    double tx, ty, phi, shx, scx, scy, skx, sky;
-   //double dimOT, dimOR, dimTX, dimRX, ratio;
-   volatile double dimOT, dimOR, dimTX, dimRX;
-   double ratio;
+   double dimOT, dimOR, dimTX, dimRX, ratio;
    DmtxVector2 vOT, vOR, vTX, vRX, vTmp;
    DmtxMatrix3 m, mtxy, mphi, mshx, mscx, mscy, mscxy, msky, mskx;
 
@@ -2652,11 +2646,11 @@ dmtxRegionUpdateCorners(DmtxDecode *dec, DmtxRegion *reg, DmtxVector2 p00,
 
    return DmtxPass;
 }
-
 /**
  *
  *
  */
+
 extern DmtxPassFail
 dmtxRegionUpdateXfrms(DmtxDecode *dec, DmtxRegion *reg)
 {
@@ -2808,6 +2802,7 @@ ReadModuleColor(DmtxDecode *dec, DmtxRegion *reg, int symbolRow, int symbolCol,
  * \param  reg
  * \return DmtxPass | DmtxFail
  */
+
 static DmtxPassFail
 MatrixRegionFindSize(DmtxDecode *dec, DmtxRegion *reg)
 {
@@ -6388,5 +6383,6 @@ void imlib_find_datamatrices(list_t *out, image_t *ptr, rectangle_t *roi, int ef
     if (ptr->bpp != IMAGE_BPP_GRAYSCALE) fb_free(); // grayscale_image;
 }
 
-//#pragma GCC diagnostic pop
+
+
 #endif //IMLIB_ENABLE_DATAMATRICES

@@ -161,28 +161,22 @@ STATIC mp_obj_t py_net_search(uint n_args, const mp_obj_t *args, mp_map_t *kw_ar
     rectangle_t roi;
     py_helper_keyword_rectangle_roi(arg_img, n_args, args, 2, kw_args, &roi);
 
-    volatile float input_1 = 0.6f;
-    volatile float input_2 = 1.0f;
-    volatile float input_3 = 0.5f;
-    volatile float input_4 = 0.0f;
-    volatile float arg_threshold = py_helper_keyword_float(n_args, args, 3, kw_args, MP_OBJ_NEW_QSTR(MP_QSTR_threshold), input_1);
+    float arg_threshold = py_helper_keyword_float(n_args, args, 3, kw_args, MP_OBJ_NEW_QSTR(MP_QSTR_threshold), 0.6);
     PY_ASSERT_TRUE_MSG((0 <= arg_threshold) && (arg_threshold <= 1), "0 <= threshold <= 1");
 
-    
-    volatile float arg_min_scale = py_helper_keyword_float(n_args, args, 4, kw_args, MP_OBJ_NEW_QSTR(MP_QSTR_min_scale), input_2);
+    float arg_min_scale = py_helper_keyword_float(n_args, args, 4, kw_args, MP_OBJ_NEW_QSTR(MP_QSTR_min_scale), 1.0);
     PY_ASSERT_TRUE_MSG((0 < arg_min_scale) && (arg_min_scale <= 1), "0 < min_scale <= 1");
 
-    
-    volatile float arg_scale_mul = py_helper_keyword_float(n_args, args, 5, kw_args, MP_OBJ_NEW_QSTR(MP_QSTR_scale_mul), input_3);
+    float arg_scale_mul = py_helper_keyword_float(n_args, args, 5, kw_args, MP_OBJ_NEW_QSTR(MP_QSTR_scale_mul), 0.5);
     PY_ASSERT_TRUE_MSG((0 <= arg_scale_mul) && (arg_scale_mul < 1), "0 <= scale_mul < 1");
 
-    volatile float arg_x_overlap = py_helper_keyword_float(n_args, args, 6, kw_args, MP_OBJ_NEW_QSTR(MP_QSTR_x_overlap), input_4);
+    float arg_x_overlap = py_helper_keyword_float(n_args, args, 6, kw_args, MP_OBJ_NEW_QSTR(MP_QSTR_x_overlap), 0);
     PY_ASSERT_TRUE_MSG(((0 <= arg_x_overlap) && (arg_x_overlap < 1)) || (arg_x_overlap == -1), "0 <= x_overlap < 1");
 
-    volatile float arg_y_overlap = py_helper_keyword_float(n_args, args, 7, kw_args, MP_OBJ_NEW_QSTR(MP_QSTR_y_overlap), input_4);
+    float arg_y_overlap = py_helper_keyword_float(n_args, args, 7, kw_args, MP_OBJ_NEW_QSTR(MP_QSTR_y_overlap), 0);
     PY_ASSERT_TRUE_MSG(((0 <= arg_y_overlap) && (arg_y_overlap < 1)) || (arg_y_overlap == -1), "0 <= y_overlap < 1");
 
-    volatile float arg_contrast_threshold = py_helper_keyword_float(n_args, args, 8, kw_args, MP_OBJ_NEW_QSTR(MP_QSTR_contrast_threshold), input_2);
+    float arg_contrast_threshold = py_helper_keyword_float(n_args, args, 8, kw_args, MP_OBJ_NEW_QSTR(MP_QSTR_contrast_threshold), 1);
     PY_ASSERT_TRUE_MSG(0 <= arg_contrast_threshold, "0 <= contrast_threshold");
 
     bool softmax = py_helper_keyword_int(n_args, args, 9, kw_args, MP_OBJ_NEW_QSTR(MP_QSTR_softmax), false);
@@ -192,7 +186,7 @@ STATIC mp_obj_t py_net_search(uint n_args, const mp_obj_t *args, mp_map_t *kw_ar
 
     fb_alloc_mark();
 
-    for (volatile float scale = 1; scale >= arg_min_scale; scale *= arg_scale_mul) {
+    for (float scale = 1; scale >= arg_min_scale; scale *= arg_scale_mul) {
         // Either provide a subtle offset to center multiple detection windows or center the only detection window.
         for (int y = roi.y + ((arg_y_overlap != -1) ? (fmodf(roi.h, (roi.h * scale)) / 2) : ((roi.h - (roi.h * scale)) / 2));
                 // Finish when the detection window is outside of the ROI.
@@ -241,9 +235,9 @@ STATIC mp_obj_t py_net_search(uint n_args, const mp_obj_t *args, mp_map_t *kw_ar
                         nn_run_network(arg_net, arg_img, &new_roi, softmax);
 
                         int max_index = -1;
-                        volatile float max_value = -1;
+                        float max_value = -1;
                         for (int i=0; i<arg_net->output_size; i++) {
-                            volatile float value = ((float) (arg_net->output_data[i] + 128)) / 255;
+                            float value = ((float) (arg_net->output_data[i] + 128)) / 255;
                             if ((value >= arg_threshold) && (value > max_value)) {
                                 max_index = i;
                                 max_value = value;

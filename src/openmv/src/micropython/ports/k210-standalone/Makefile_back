@@ -80,8 +80,7 @@ BOTH_FLAGS = -mcmodel=medany \
 			 -fdata-sections \
 			 -fstrict-volatile-bitfields \
 			 -fno-zero-initialized-in-bss \
-			 -Os \
-			 -ffloat-store \
+			 -O1 \
 			 -ggdb \
 			 -Wall \
 			 -Werror=all \
@@ -101,6 +100,40 @@ BOTH_FLAGS = -mcmodel=medany \
 			 -Wno-strict-aliasing \
 			 -Wno-implicit-fallthrough \
 			 -Wno-error=stringop-truncation \
+			 -fcombine-stack-adjustments \
+			 -fcompare-elim \
+			 -fcprop-registers \
+			 -fdefer-pop \
+			 -fforward-propagate \
+  -fguess-branch-probability \
+  -fif-conversion \
+  -fif-conversion2 \
+  -finline-functions-called-once \
+  -fipa-profile \
+  -fipa-pure-const \
+  -fipa-reference \
+  -fmove-loop-invariants \
+  -fomit-frame-pointer \
+  -freorder-blocks \
+  -fsection-anchors \
+  -fshrink-wrap \
+  -fsplit-wide-types \
+  -fssa-phiopt \
+  -ftree-bit-ccp \
+  -ftree-builtin-call-dce \
+  -ftree-ccp \
+  -ftree-ch \
+  -ftree-coalesce-vars \
+  -ftree-copy-prop \
+  -ftree-dce \
+  -ftree-dominator-opts \
+  -ftree-dse \
+  -ftree-fre \
+  -ftree-pta \
+  -ftree-sink \
+  -ftree-slsr \
+  -ftree-sra \
+  -ftree-ter \
 			 -Linclude/
 
 CFLAGS_RV64_K210 = -lm \

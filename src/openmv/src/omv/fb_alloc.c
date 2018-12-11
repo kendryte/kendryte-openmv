@@ -38,7 +38,7 @@ void fb_alloc_mark()
 
     // Check if allocation overwrites the framebuffer pixels
     if (new_pointer < (char *) MAIN_FB_PIXELS()) {
-        /*hutu nlr_raise_for_fb_alloc_mark*/
+
         nlr_raise(mp_obj_new_exception_msg(&mp_type_MemoryError,
             "Out of fast Frame Buffer Stack Memory!"
             " Please reduce the resolution of the image you are running this algorithm on to bypass this issue!"));

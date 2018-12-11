@@ -137,6 +137,7 @@ int ALWAYS_INLINE fast_roundf(float x)
     return (int)roundf(x);
 }
 
+#if 0
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wstrict-aliasing"
 typedef union{
@@ -159,7 +160,7 @@ float fast_expf(float x)
     return *((float*)&packed);
 }
 #pragma GCC diagnostic pop
-
+#endif
 /* 
  * From Hackers Delight:
  * This is a very approximate but very fast version of acbrt. It is just eight

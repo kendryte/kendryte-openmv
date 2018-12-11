@@ -12,7 +12,7 @@
 #include "ff_wrapper.h"
 #define FF_MIN(x,y) (((x)<(y))?(x):(y))
 
-/*hutu*/
+
 static char *ffs_strerr(FRESULT res)
 {
     static const char *ffs_errors[]={

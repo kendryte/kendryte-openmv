@@ -244,7 +244,14 @@ void dvp_disable_auto(void);
  */
 void dvp_set_output_enable(dvp_output_mode_t index, int enable);
 
-void dvp_reset(void);
+/**
+ * @brief       Set sccb clock rate
+ *
+ * @param[in]   clk_rate       Sccb clock rate
+ *
+ * @return      The real sccb clock rate
+ */
+uint32_t dvp_sccb_set_clk_rate(uint32_t clk_rate);
 
 #ifdef __cplusplus
 }
