@@ -1,6 +1,10 @@
 OpenMV for Kendryte K210
 ======
-Special thanks to DeepVISION, they are enthusiastic and we were enjoyable working with them in this project.
+Special thanks to **DeepVISION**, they are enthusiastic and we were enjoyable working with them in this project.
+
+Also thanks to **Sipeed**, without the [MaixPy project](http://github.com/sipeed/MaixPy), we can't finish this so fast.
+
+## Usage
 
 Kendryte-standalone-opemv build steps:
 1. download V8.2.0 toolchain from https://kendryte.com/downloads/
