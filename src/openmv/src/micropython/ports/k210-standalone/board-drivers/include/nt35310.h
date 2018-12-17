@@ -96,6 +96,7 @@
 #define INTERFACE_CTL           0xF6
 
 #define DCX_GPIONUM             (2)
+#define RST_GPIONUM             (3)
 
 #define SPI_CHANNEL             0
 #define SPI_SLAVE_SELECT        3
@@ -109,4 +110,3 @@ void tft_write_word(uint32_t *data_buf, uint32_t length, uint32_t flag);
 void tft_fill_data(uint32_t *data_buf, uint32_t length);
 
 #endif
-

@@ -45,7 +45,7 @@ void lcd_init(void)
     tft_write_command(PIXEL_FORMAT_SET);
     data = 0x55;
     tft_write_byte(&data, 1);
-    lcd_set_direction(DIR_XY_LRUD);
+    lcd_set_direction(DIR_YX_RLUD);
 
     /*display on*/
     tft_write_command(DISPALY_ON);
@@ -54,7 +54,7 @@ void lcd_init(void)
 
 void lcd_set_direction(lcd_dir_t dir)
 {
-    dir |= 0x08;
+    // dir |= 0x08;
     lcd_ctl.dir = dir;
     if (dir & DIR_XY_MASK)
     {
@@ -148,21 +148,21 @@ void lcd_ram_draw_string(char *str, uint32_t *ptr, uint16_t font_color, uint16_t
             {
                 switch (data >> 6)
                 {
-                    case 0:
-                        *pixel = ((uint32_t)bg_color << 16) | bg_color;
-                        break;
-                    case 1:
-                        *pixel = ((uint32_t)bg_color << 16) | font_color;
-                        break;
-                    case 2:
-                        *pixel = ((uint32_t)font_color << 16) | bg_color;
-                        break;
-                    case 3:
-                        *pixel = ((uint32_t)font_color << 16) | font_color;
-                        break;
-                    default:
-                        *pixel = 0;
-                        break;
+                case 0:
+                    *pixel = ((uint32_t)bg_color << 16) | bg_color;
+                    break;
+                case 1:
+                    *pixel = ((uint32_t)bg_color << 16) | font_color;
+                    break;
+                case 2:
+                    *pixel = ((uint32_t)font_color << 16) | bg_color;
+                    break;
+                case 3:
+                    *pixel = ((uint32_t)font_color << 16) | font_color;
+                    break;
+                default:
+                    *pixel = 0;
+                    break;
                 }
                 data <<= 2;
                 pixel++;
@@ -202,10 +202,8 @@ void lcd_draw_rectangle(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint
     tft_write_word(data_buf, ((y2 - y1 + 1) * width + 1) / 2, 0);
 }
 
-
 void lcd_draw_picture(uint16_t x1, uint16_t y1, uint16_t width, uint16_t height, uint32_t *ptr)
 {
     lcd_set_area(x1, y1, x1 + width - 1, y1 + height - 1);
     tft_write_word(ptr, width * height / 2, lcd_ctl.mode ? 2 : 0);
 }
-

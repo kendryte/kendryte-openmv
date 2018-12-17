@@ -18,9 +18,14 @@ for i in range(len(file_list)):
         import init
 #lcd init
 st=machine.nt35310()
+
 st.init()
+
+for i in range(9999):
+    print()
+
 #ov init
-ov=machine.ov5640()
+ov=machine.ov2640()
 ov.init()
 #ov.lcdshow()
 

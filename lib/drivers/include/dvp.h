@@ -17,10 +17,11 @@
 #include <stdint.h>
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
-/* clang-format off */
+    /* clang-format off */
 /**
  * @brief       DVP object
  */
@@ -94,89 +95,89 @@ typedef struct _dvp
 #define DVP_STS_DVP_EN_WE                       0x00020000U
 #define DVP_STS_SCCB_EN                         0x01000000U
 #define DVP_STS_SCCB_EN_WE                      0x02000000U
-/* clang-format on */
+    /* clang-format on */
 
-typedef enum _dvp_output_mode
-{
-    DVP_OUTPUT_AI,
-    DVP_OUTPUT_DISPLAY,
-} dvp_output_mode_t;
+    typedef enum _dvp_output_mode
+    {
+        DVP_OUTPUT_AI,
+        DVP_OUTPUT_DISPLAY,
+    } dvp_output_mode_t;
 
-/**
+    /**
  * @brief       DVP object instance
  */
-extern volatile dvp_t* const dvp;
+    extern volatile dvp_t *const dvp;
 
-/**
+    /**
  * @brief       Initialize DVP
  */
-void dvp_init(uint8_t reg_len);
+    void dvp_init(uint8_t reg_len);
 
-/**
+    /**
  * @brief       Set image format
  *
  * @param[in]   format      The image format
  */
-void dvp_set_image_format(uint32_t format);
+    void dvp_set_image_format(uint32_t format);
 
-/**
+    /**
  * @brief       Set image size
  *
  * @param[in]   width   The width  of image
  * @param[in]   height  The height of image
  */
-void dvp_set_image_size(uint32_t width, uint32_t height);
+    void dvp_set_image_size(uint32_t width, uint32_t height);
 
-/**
+    /**
  * @brief       Set the address of RGB for AI
  *
  * @param[in]   r_addr      The R address of RGB
  * @param[in]   g_addr      The G address of RGB
  * @param[in]   b_addr      The B address of RGB
  */
-void dvp_set_ai_addr(uint32_t r_addr, uint32_t g_addr, uint32_t b_addr);
+    void dvp_set_ai_addr(uint32_t r_addr, uint32_t g_addr, uint32_t b_addr);
 
-/**
+    /**
  * @brief       Set the address of RGB for display
  *
  * @param[in]   r_addr      The R address of RGB
  * @param[in]   g_addr      The G address of RGB
  * @param[in]   b_addr      The B address of RGB
  */
-void dvp_set_display_addr(uint32_t addr);
+    void dvp_set_display_addr(uint32_t addr);
 
-/**
+    /**
  * @brief       The frame start transfer
  */
-void dvp_start_frame(void);
+    void dvp_start_frame(void);
 
-/**
+    /**
  * @brief       The DVP convert start
  */
-void dvp_start_convert(void);
+    void dvp_start_convert(void);
 
-/**
+    /**
  * @brief       The DVP convert finish
  */
-void dvp_finish_convert(void);
+    void dvp_finish_convert(void);
 
-/**
+    /**
  * @brief       Get the image data
  *
  * @note        The image data stored in the address of RGB
  */
-void dvp_get_image(void);
+    void dvp_get_image(void);
 
-/**
+    /**
  * @brief       Use SCCB write register
  *
  * @param[in]   dev_addr        The device address
  * @param[in]   reg_addr        The register address
  * @param[in]   reg_data        The register data
  */
-void dvp_sccb_send_data(uint8_t dev_addr, uint16_t reg_addr, uint8_t reg_data);
+    void dvp_sccb_send_data(uint8_t dev_addr, uint16_t reg_addr, uint8_t reg_data);
 
-/**
+    /**
  * @brief       Use SCCB read register
  *
  * @param[in]   dev_addr        The device address
@@ -184,28 +185,28 @@ void dvp_sccb_send_data(uint8_t dev_addr, uint16_t reg_addr, uint8_t reg_data);
  *
  * @return      The register value
  */
-uint8_t dvp_sccb_receive_data(uint8_t dev_addr, uint16_t reg_addr);
+    uint8_t dvp_sccb_receive_data(uint8_t dev_addr, uint16_t reg_addr);
 
-/**
+    /**
  * @brief       Enable dvp burst
  */
-void dvp_enable_burst(void);
+    void dvp_enable_burst(void);
 
-/**
+    /**
  * @brief       Disable dvp burst
  */
-void dvp_disable_burst(void);
+    void dvp_disable_burst(void);
 
-/**
+    /**
  * @brief       Enable or disable dvp interrupt
  *
  * @param[in]   interrupt       Dvp interrupt
  * @param[in]   status          0:disable 1:enable
  *
  */
-void dvp_config_interrupt(uint32_t interrupt, uint8_t enable);
+    void dvp_config_interrupt(uint32_t interrupt, uint8_t enable);
 
-/**
+    /**
  * @brief       Get dvp interrupt status
  *
  * @param[in]   interrupt       Dvp interrupt
@@ -215,43 +216,45 @@ void dvp_config_interrupt(uint32_t interrupt, uint8_t enable);
  *     - 0      false
  *     - 1      true
  */
-int dvp_get_interrupt(uint32_t interrupt);
+    int dvp_get_interrupt(uint32_t interrupt);
 
-/**
+    /**
  * @brief       Clear dvp interrupt status
  *
  * @param[in]   interrupt       Dvp interrupt
  *
  */
-void dvp_clear_interrupt(uint32_t interrupt);
+    void dvp_clear_interrupt(uint32_t interrupt);
 
-/**
+    /**
  * @brief       Enable dvp auto mode
  */
-void dvp_enable_auto(void);
+    void dvp_enable_auto(void);
 
-/**
+    /**
  * @brief       Disable dvp auto mode
  */
-void dvp_disable_auto(void);
+    void dvp_disable_auto(void);
 
-/**
+    /**
  * @brief       Dvp ouput data enable or not
  *
  * @param[in]   index       0:AI, 1:display
  * @param[in]   enable      0:disable, 1:enable
  *
  */
-void dvp_set_output_enable(dvp_output_mode_t index, int enable);
+    void dvp_set_output_enable(dvp_output_mode_t index, int enable);
 
-/**
+    /**
  * @brief       Set sccb clock rate
  *
  * @param[in]   clk_rate       Sccb clock rate
  *
  * @return      The real sccb clock rate
  */
-uint32_t dvp_sccb_set_clk_rate(uint32_t clk_rate);
+    uint32_t dvp_sccb_set_clk_rate(uint32_t clk_rate);
+
+    uint32_t dvp_set_xclk_rate(uint32_t xclk_rate);
 
 #ifdef __cplusplus
 }

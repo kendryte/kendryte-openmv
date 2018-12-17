@@ -151,6 +151,7 @@ MODULES_SRC_C= \
 		$(MPY_MOD_PATH)/machine/machine_timer.c\
 		$(MPY_MOD_PATH)/machine/machine_nt35310.c\
 		$(MPY_MOD_PATH)/machine/machine_ov5640.c\
+		$(MPY_MOD_PATH)/machine/machine_ov2640.c\
 		$(MPY_MOD_PATH)/machine/machine_burner.c\
 		$(MPY_MOD_PATH)/machine/machine_face_detect.c\
 		$(MPY_MOD_PATH)/machine/machine_spiflash.c\

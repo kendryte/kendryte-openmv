@@ -20,7 +20,7 @@
 #include "sysctl.h"
 #include <math.h>
 
-volatile dvp_t* const dvp = (volatile dvp_t*)DVP_BASE_ADDR;
+volatile dvp_t *const dvp = (volatile dvp_t *)DVP_BASE_ADDR;
 static uint8_t g_sccb_reg_len = 8;
 
 static void mdelay(uint32_t ms)
@@ -49,7 +49,7 @@ uint32_t dvp_sccb_set_clk_rate(uint32_t clk_rate)
     uint32_t tmp;
     uint32_t v_sccb_freq = sysctl_clock_get_freq(SYSCTL_CLOCK_APB1);
     uint16_t v_period_clk_cnt = round(v_sccb_freq / clk_rate / 2.0);
-    if(v_period_clk_cnt > 255)
+    if (v_period_clk_cnt > 255)
     {
         return 0;
     }
@@ -116,7 +116,7 @@ uint8_t dvp_sccb_receive_data(uint8_t dev_addr, uint16_t reg_addr)
 
     dvp_sccb_start_transfer();
 
-    return (uint8_t) DVP_SCCB_RDATA_BYTE(dvp->sccb_cfg);
+    return (uint8_t)DVP_SCCB_RDATA_BYTE(dvp->sccb_cfg);
 }
 
 static void dvp_reset(void)
@@ -143,6 +143,22 @@ void dvp_init(uint8_t reg_len)
     dvp->cmos_cfg |= DVP_CMOS_CLK_DIV(1) | DVP_CMOS_CLK_ENABLE;
     dvp_sccb_clk_init();
     dvp_reset();
+}
+
+uint32_t dvp_set_xclk_rate(uint32_t xclk_rate)
+{
+    uint32_t v_apb1_clk = sysctl_clock_get_freq(SYSCTL_CLOCK_APB1);
+    uint32_t v_period;
+    if (v_apb1_clk > xclk_rate * 2)
+        v_period = round(v_apb1_clk / (xclk_rate * 2.0)) - 1;
+    else
+        v_period = 0;
+    if (v_period > 255)
+        v_period = 255;
+    dvp->cmos_cfg &= (~DVP_CMOS_CLK_DIV_MASK);
+    dvp->cmos_cfg |= DVP_CMOS_CLK_DIV(v_period) | DVP_CMOS_CLK_ENABLE;
+    dvp_reset();
+    return v_apb1_clk / ((v_period + 1) * 2);
 }
 
 void dvp_set_image_format(uint32_t format)
@@ -278,4 +294,3 @@ void dvp_set_output_enable(dvp_output_mode_t index, int enable)
             dvp->dvp_cfg &= ~DVP_CFG_DISPLAY_OUTPUT_ENABLE;
     }
 }
-
